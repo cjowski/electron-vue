@@ -14,9 +14,6 @@
     name: 'FmChannelValuesChart',
 
     props: {
-      espJson: {
-        type: Object
-      },
       channelColors: {
         type: Array
       }
@@ -82,11 +79,19 @@
       }
     }),
 
+    computed: {
+
+      espFmChannelValuesJson() {
+        return this.$store.getters.espFmChannelValuesJson;
+      }
+
+    },
+
     watch: {
 
-      espJson() {
+      espFmChannelValuesJson() {
         let self = this;
-        this.espJson.FmChannelValues.forEach(function(fmValue) {
+        this.espFmChannelValuesJson.FmChannelValues.forEach(function(fmValue) {
           if (!self.fmChannelValues.time.includes(fmValue.Time)) {
             self.addChannelValues(
               parseInt(fmValue.Time),

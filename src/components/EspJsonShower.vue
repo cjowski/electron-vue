@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row class="pt-6">
-      <fm-channel-values-chart :espJson="espJson" :channelColors="channelColors" />
+      <fm-channel-values-chart :channelColors="channelColors" />
     </v-row>
     <v-row>
       <v-col>
@@ -34,7 +34,6 @@
   export default {
     name: 'EspJsonShower',
     data: () => ({
-      espJson: null,
       channelColors: [
         "#ebc437",
         "#dd2222",
@@ -46,20 +45,23 @@
       FmChannelValuesChart
     },
     computed: {
+      espFmChannelValuesJson() {
+        return this.$store.getters.espFmChannelValuesJson;
+      },
       lastFmChannelValues: function () {
-        if (this.espJson == null) {
+        if (this.espFmChannelValuesJson == null) {
           return null;
         }
-        return this.espJson.FmChannelValues[this.espJson.FmChannelValues.length - 1];
+        return this.espFmChannelValuesJson.FmChannelValues[this.espFmChannelValuesJson.FmChannelValues.length - 1];
       },
       time: function () {
-        if (this.espJson == null) {
+        if (this.espFmChannelValuesJson == null) {
           return -1;
         }
         return this.lastFmChannelValues.Time;
       },
       fmChannelValues: function () {
-        if (this.espJson == null) {
+        if (this.espFmChannelValuesJson == null) {
           return [-1, -1, -1, -1];
         }
         var values = [];
@@ -68,18 +70,6 @@
         });
         return values;
       }
-    },
-    mounted: function() {
-      const self = this;          
-      this.fetchJsonInterval = setInterval(function(){
-        fetch("http://192.168.0.31/")
-          .then(response => response.json())
-          .then(data => {
-            if (data != null) {
-              self.espJson = data;
-            }
-          });
-      }, 50);
     }
   }
 </script>

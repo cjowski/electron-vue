@@ -27,6 +27,17 @@ export default {
     //
   }),
 
-  
+  mounted() {
+    const self = this;          
+    this.fetchJsonInterval = setInterval(function(){
+      fetch("http://192.168.0.31/")
+        .then(response => response.json())
+        .then(data => {
+          if (data != null) {
+            self.$store.commit('setEspFmChannelValuesJson', data);
+          }
+        });
+    }, 20);
+  }
 };
 </script>
