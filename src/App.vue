@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app style="font-family: Calibri;">
     <!-- <v-app-bar
       app
       color="primary"

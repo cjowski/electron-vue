@@ -24,7 +24,7 @@
     },
 
     data: () => ({
-      chartData: null,
+      chartData: {},
       fmChannelValues: {
         time: [],
         ch1: [],
