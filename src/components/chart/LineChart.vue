@@ -10,8 +10,18 @@ export default {
       type: Object
     }
   },
+
   mounted () {
     this.renderChart(this.chartData, this.options)
+  },
+
+  watch: {
+    options: {
+      deep: true,
+      handler: function () {
+        this.renderChart(this.chartData, this.options);
+      }
+    }
   }
 };
 </script>

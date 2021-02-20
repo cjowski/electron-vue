@@ -1,26 +1,22 @@
 <template>
   <v-app style="font-family: Calibri;">
-    <!-- <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-    </v-app-bar> -->
-
-    <v-main>
-      <EspJsonShower/>
+    <toolbar/>
+    <v-main class="my-background">
+      <v-container class="main-content">
+        <router-view />
+      </v-container>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import EspJsonShower from './components/EspJsonShower';
+import Toolbar from './components/Toolbar'
 
 export default {
   name: 'App',
 
   components: {
-    EspJsonShower,
+    Toolbar
   },
 
   data: () => ({
@@ -29,15 +25,24 @@ export default {
 
   mounted() {
     const self = this;          
-    this.fetchJsonInterval = setInterval(function(){
-      fetch("http://192.168.0.31/")
+    this.fetchFmInterval = setInterval(function(){
+      fetch("http://192.168.0.31/fm")
         .then(response => response.json())
         .then(data => {
           if (data != null) {
             self.$store.commit('setEspFmChannelValuesJson', data);
           }
         });
-    }, 20);
+    }, 100);
+    this.fetchGyroInterval = setInterval(function(){
+      fetch("http://192.168.0.31/gyro")
+        .then(response => response.json())
+        .then(data => {
+          if (data != null) {
+            self.$store.commit('setEspGyroValuesJson', data);
+          }
+        });
+    }, 50);
   }
 };
 </script>

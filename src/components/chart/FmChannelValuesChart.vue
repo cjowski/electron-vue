@@ -1,6 +1,7 @@
 <template>
   <v-container>
     <line-chart
+      :style="'height: ' + chartHeight + 'px'"
       :chart-data="chartData"
       :options="chartOptions"
     />
@@ -34,6 +35,7 @@
       },
       channelsCount: 4,
       valuesLimit: 250,
+      chartHeight: 500,
       chartOptions: {
         responsive: true,
         maintainAspectRatio: false,
@@ -83,6 +85,10 @@
 
       espFmChannelValuesJson() {
         return this.$store.getters.espFmChannelValuesJson;
+      },
+
+      vuetifyHeight () {
+        return this.$vuetify.breakpoint.height;
       }
 
     },
@@ -103,6 +109,10 @@
           }
         });
         this.updateChartData();
+      },
+
+      vuetifyHeight() {
+        this.updateChartHeight();
       }
 
     },
@@ -162,6 +172,13 @@
             }
           ]
         };
+      },
+
+      updateChartHeight() {
+        let self = this;
+        setTimeout(function() {
+          self.chartHeight = 0.75 * self.vuetifyHeight;
+        }, 50);
       }
 
     }

@@ -44,7 +44,7 @@
 </template>
 
 <script>
-  import FmChannelValuesChart from "./FmChannelValuesChart.vue"
+  import FmChannelValuesChart from "../components/chart/FmChannelValuesChart"
 
   export default {
     name: 'EspJsonShower',
