@@ -1,8 +1,8 @@
 <template>
   <v-app style="font-family: Calibri;">
     <toolbar/>
-    <v-main class="my-background">
-      <v-container class="main-content">
+    <v-main>
+      <v-container class="pt-2">
         <router-view />
       </v-container>
     </v-main>
@@ -19,29 +19,48 @@ export default {
     Toolbar
   },
 
-  data: () => ({
-    //
-  }),
+  methods: {
+    getRequestPath(requestName) {
+      return "http://" + this.getIp() + "/" + requestName;
+    },
+    getIp() {
+      return "192.168.0.31:80";
+    },
+    handleFetchErrors (response) {
+      if (!response.ok) {
+        throw Error(response.statusText);
+      }
+      return response;
+    }
+  },
 
   mounted() {
-    const self = this;          
+    const self = this;
+
     this.fetchFmInterval = setInterval(function(){
-      fetch("http://192.168.0.31/fm")
+      fetch(self.getRequestPath("fm"))
+        .then(self.handleFetchErrors)
         .then(response => response.json())
         .then(data => {
           if (data != null) {
             self.$store.commit('setEspFmChannelValuesJson', data);
+            self.$store.commit('addFmChannelValues', data);
           }
-        });
+        })
+        .catch(error => console.log(error));
     }, 100);
+    
     this.fetchGyroInterval = setInterval(function(){
-      fetch("http://192.168.0.31/gyro")
+      fetch(self.getRequestPath("gyro"))
+        .then(self.handleFetchErrors)
         .then(response => response.json())
         .then(data => {
           if (data != null) {
             self.$store.commit('setEspGyroValuesJson', data);
+            self.$store.commit('addGyroValues', data);
           }
-        });
+        })
+        .catch(error => console.log(error));
     }, 50);
   }
 };

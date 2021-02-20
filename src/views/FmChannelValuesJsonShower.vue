@@ -1,64 +1,70 @@
 <template>
-  <v-container>
-    <v-row class="pt-6">
-      <v-col class="d-flex justify-end">
-        <v-card
-          outlined
-          width="130"
-          :style="'border: 4px solid ' + fmSignalBorderColor"
+  <v-container class="ma-0 pa-0">
+    <v-card>
+      <fm-channel-values-chart
+        :channelSettings="channelSettings"
+        :fmSignalState="fmSignalState"
+        class="ma-0 mt-1 pt-2 pb-0"
+      />
+      <v-card-actions class="ma-0 pt-0">
+        <v-col class="ma-0 pa-1">
+          <chart-value-box
+            v-model="timeSettings"
+            :chartValue="timeInSeconds + ' (s)'"
+          />
+        </v-col>
+        <v-col
+          v-for="(fmChannelValue, index) in fmChannelValues"
+          :key="index"
+          class="ma-0 pa-1"
         >
-          <v-card-title class="justify-center text-subtitle-1">
-            <span>
-              {{fmSignalActiveText}}
-            </span>
-          </v-card-title>
-        </v-card>
-      </v-col>
-    </v-row>
-    <v-row>
-      <fm-channel-values-chart :channelColors="channelColors" />
-    </v-row>
-    <v-row style="font-size: 18px;">
-      <v-col>
-        <v-card
-          shaped
-          style="border: 3px solid #4d4d4d;"
-        >
-          <div style="text-align: center;">
-            {{"Time: " + timeInSeconds}}
-          </div>
-        </v-card>
-      </v-col>
-      <v-col v-for="(fmChannelValue, index) in fmChannelValues" :key="index">
-        <v-card
-          shaped
-          :style="'border: 3px solid ' + channelColors[index]"
-        >
-          <div style="text-align: center">
-            {{"CH" + (index + 1) + ": " + fmChannelValue}}
-          </div>
-        </v-card>
-      </v-col>
-    </v-row>
+          <chart-value-box
+            v-model="channelSettings[index]"
+            :chartValue="fmChannelValue.toString()"
+            showEye
+          />
+        </v-col>
+      </v-card-actions>
+    </v-card>
   </v-container>
 </template>
 
 <script>
   import FmChannelValuesChart from "../components/chart/FmChannelValuesChart"
+  import ChartValueBox from "../components/chart/ChartValueBox"
 
   export default {
     name: 'EspJsonShower',
+
+    components: {
+      FmChannelValuesChart,
+      ChartValueBox
+    },
+
     data: () => ({
-      channelColors: [
-        "#ebc437",
-        "#dd2222",
-        "#1eb370",
-        "#0067e6"
+      timeSettings: {
+        show: true,
+        color: "#4d4d4d"
+      },
+      channelSettings: [
+        {
+          show: true,
+          color: "#ebc437"
+        },
+        {
+          show: true,
+          color: "#dd2222"
+        },
+        {
+          show: true,
+          color: "#1eb370"
+        },
+        {
+          show: true,
+          color: "#0067e6"
+        }
       ]
     }),
-    components: {
-      FmChannelValuesChart
-    },
     computed: {
       espFmChannelValuesJson() {
         return this.$store.getters.espFmChannelValuesJson;
@@ -75,21 +81,11 @@
         }
         return parseInt(this.lastFmChannelValues.Time / 1000);
       },
-      fmSignalActive() {
+      fmSignalState() {
         if (this.lastFmChannelValues == null) {
-          return false;
+          return 0;
         }
-        return this.lastFmChannelValues.FmSignalActive;
-      },
-      fmSignalActiveText() {
-        return this.fmSignalActive
-          ? "SIGNAL"
-          : "NO SIGNAL";
-      },
-      fmSignalBorderColor() {
-        return this.fmSignalActive
-          ? "green"
-          : "red";
+        return this.lastFmChannelValues.FmSignalState;
       },
       fmChannelValues() {
         if (this.lastFmChannelValues == null) {

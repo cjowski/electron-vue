@@ -1,13 +1,14 @@
 <template>
   <v-app-bar
     app
-    src="https://wallpaper.dog/large/10838557.jpg"
+    :src="require('/public/electronics.jpg')"
+    :height="isLargeDevice ? '64' : '32'"   
   >
     <v-toolbar-items>
-      <v-btn text x-large width=150 router to="/">
+      <v-btn text :x-large="isLargeDevice" width=150 router to="/">
         FM
       </v-btn>
-      <v-btn text x-large width=150 router to="/gyro">
+      <v-btn text :x-large="isLargeDevice" width=150 router to="/gyro">
         GYRO
       </v-btn>
     </v-toolbar-items>
@@ -20,6 +21,20 @@ export default {
     return {
       
     }
+  },
+  
+  computed: {
+    isLargeDevice () {
+      switch (this.$vuetify.breakpoint.name) {
+        case 'xs': return false;
+        case 'sm': return false;
+        case 'md': return true;
+        case 'lg': return true;
+        case 'xl': return true;
+        default : throw Error("Invalid $vuetify.breakpoint.name: " + this.$vuetify.breakpoint.name);
+      }
+    }
   }
+
 }
 </script>

@@ -1,100 +1,65 @@
 <template>
-  <v-container>
-    <v-row>
+  <v-container class="ma-0 pa-0">
+    <v-card>
       <gyro-values-chart
-        :angles="angles"
+        :angleSettings="anglesSettings"
         ref="gyroValuesChartRef"
+        class="ma-0 mt-1 pt-2 pb-0"
       />
-    </v-row>
-    <v-row style="font-size: 18px;">
-      <v-col>
-        <v-card
-          shaped
-          style="border: 3px solid #4d4d4d;"
-        >
-          <div style="text-align: center;">
-            {{"Time: " + timeInSeconds}}
-          </div>
-        </v-card>
-      </v-col>
-      <v-col>
-        <v-card
-          shaped
-          :style="'border: 3px solid ' + (angles.pitch.show ? angles.pitch.color : turnOffAngleColor)"
-        >
-          <div
-            class="angle-displayer-btn"
-            @click="$refs.gyroValuesChartRef.centerYByMiddleValue(pitch)"
-          >
-            {{"Pitch: " + pitch}}
-          </div>
-          <v-btn
-            icon
-            @click="angles.pitch.show = !angles.pitch.show"
-            small absolute right fab
-            :style="{top: '50%', transform:'translate(35%, -50%)'}"
-          > 
-            <v-icon v-if="angles.pitch.show">mdi-eye-off</v-icon>
-            <v-icon v-else>mdi-eye</v-icon>
-          </v-btn>
-        </v-card>
-      </v-col>
-      <v-col>
-        <v-card
-          shaped
-          :style="'border: 3px solid ' + (angles.roll.show ? angles.roll.color : turnOffAngleColor)"
-        >
-          <div
-            class="angle-displayer-btn"
-            @click="$refs.gyroValuesChartRef.centerYByMiddleValue(roll)"
-          >
-            {{"Roll: " + roll}}
-          </div>
-          <v-btn
-            icon
-            @click="angles.roll.show = !angles.roll.show"
-            small absolute right fab
-            :style="{top: '50%', transform:'translate(35%, -50%)'}"
-          > 
-            <v-icon v-if="angles.roll.show">mdi-eye-off</v-icon>
-            <v-icon v-else>mdi-eye</v-icon>
-          </v-btn>
-        </v-card>
-      </v-col>
-      <v-col>
-        <v-card
-          shaped
-          :elevation="25"
-          :style="'border: 3px solid ' + (angles.yaw.show ? angles.yaw.color : turnOffAngleColor)"
-        >
-          <div
-            class="angle-displayer-btn"
-            @click="$refs.gyroValuesChartRef.centerYByMiddleValue(yaw)"
-          >
-            {{"Yaw: " + yaw}}
-          </div>
-          <v-btn
-            icon
-            @click="angles.yaw.show = !angles.yaw.show"
-            small absolute right fab
-            :style="{top: '50%', transform:'translate(35%, -50%)'}"
-          > 
-            <v-icon v-if="angles.yaw.show">mdi-eye-off</v-icon>
-            <v-icon v-else>mdi-eye</v-icon>
-          </v-btn>
-        </v-card>
-      </v-col>
-    </v-row>
+      <v-card-actions class="ma-0 pt-0">
+        <v-col class="ma-0 pa-1">
+          <chart-value-box
+            v-model="timeSettings"
+            :chartValue="timeInSeconds + ' (s)'"
+          />
+        </v-col>
+        <v-col class="ma-0 pa-1">
+          <chart-value-box
+            v-model="anglesSettings.pitch"
+            :chartValue="pitch.toFixed(2)"
+            :onClickFunction="function () { $refs.gyroValuesChartRef.centerYByMiddleValue(pitch) }"
+            showEye
+          />
+        </v-col>
+        <v-col class="ma-0 pa-1">
+          <chart-value-box
+            v-model="anglesSettings.roll"
+            :chartValue="roll.toFixed(2)"
+            :onClickFunction="function () { $refs.gyroValuesChartRef.centerYByMiddleValue(roll) }"
+            showEye
+          />
+        </v-col>
+        <v-col class="ma-0 pa-1">
+          <chart-value-box
+            v-model="anglesSettings.yaw"
+            :chartValue="yaw.toFixed(2)"
+            :onClickFunction="function () { $refs.gyroValuesChartRef.centerYByMiddleValue(yaw) }"
+            showEye
+          />
+        </v-col>
+      </v-card-actions>
+    </v-card>
   </v-container>
 </template>
 
 <script>
   import GyroValuesChart from "../components/chart/GyroValuesChart"
+  import ChartValueBox from "../components/chart/ChartValueBox"
 
   export default {
     name: 'GyroJsonShower',
+
+    components: {
+      GyroValuesChart,
+      ChartValueBox
+    },
+
     data: () => ({
-      angles: {
+      timeSettings: {
+        show: true,
+        color: "#4d4d4d"
+      },
+      anglesSettings: {
         pitch: {
           show: true,
           color: "#ebc437"
@@ -107,12 +72,9 @@
           show: true,
           color: "#1eb370"
         }
-      },
-      turnOffAngleColor: "#4d4d4d"
+      }
     }),
-    components: {
-      GyroValuesChart
-    },
+
     computed: {
       espGyroValuesJson() {
         return this.$store.getters.espGyroValuesJson;
@@ -150,10 +112,3 @@
     }
   }
 </script>
-
-<style>
-  .angle-displayer-btn {
-    text-align: center;
-    cursor: pointer;
-  }
-</style>

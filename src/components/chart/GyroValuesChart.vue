@@ -1,11 +1,23 @@
 <template>
   <v-container>
-    <v-btn
-      large fab absolute right color="green"
-      @click="restoreDefaultView()"
-    > 
-      <v-icon large>mdi-restore</v-icon>
-    </v-btn>
+    <v-card class="ma-0">
+      <v-navigation-drawer
+        app
+        right
+        permanent
+        mini-variant
+        mini-variant-width=64
+        color="grey darken-4"
+      >
+        <v-list>
+          <v-list-item
+            @click="restoreDefaultView()"
+          >
+            <v-icon>mdi-restore</v-icon>
+          </v-list-item>
+        </v-list>
+      </v-navigation-drawer>
+    </v-card>
     <line-chart
       :style="'height: ' + chartHeight + 'px'"
       :chart-data="chartData"
@@ -21,7 +33,7 @@
     name: 'GyroValuesChart',
 
     props: {
-      angles: {
+      angleSettings: {
         type: Object
       }
     },
@@ -32,14 +44,6 @@
 
     data: () => ({
       chartData: {},
-      gyroValues: {
-        time: [],
-        pitch: [],
-        roll: [],
-        yaw: []
-      },
-      valuesLimit: 250,
-      chartHeight: 500,
       mouseDown: false,
       mousePosY: 0,
       previousTimeMoveY: 0,
@@ -89,150 +93,109 @@
     }),
 
     computed: {
-
       espGyroValuesJson() {
         return this.$store.getters.espGyroValuesJson;
       },
-
-      vuetifyHeight () {
-        return this.$vuetify.breakpoint.height;
+      gyroChartData() {
+        return this.$store.getters.gyroChartData;
+      },
+      chartHeight () {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'xs': return 200;
+          case 'sm': return 230;
+          case 'md': return 500;
+          case 'lg': return 600;
+          case 'xl': return 800;
+          default : throw Error("Invalid $vuetify.breakpoint.name: " + this.$vuetify.breakpoint.name);
+        }
       }
-
     },
 
     created: function () {
-      window.addEventListener('wheel', this.handleScroll);
-      window.addEventListener('mousedown', this.handleMouseDown);
-      window.addEventListener('mouseup', this.handleMouseUp);
-      window.addEventListener('mousemove', this.handleMouseMove);
-
+      // window.addEventListener('wheel', this.handleScroll);
+      // window.addEventListener('mousedown', this.handleMouseDown);
+      // window.addEventListener('mouseup', this.handleMouseUp);
+      // window.addEventListener('mousemove', this.handleMouseMove);
     },
 
     destroyed: function () {
-      window.removeEventListener('wheel', this.handleScroll);
-      window.removeEventListener('mousedown', this.handleMouseDown);
-      window.removeEventListener('mouseup', this.handleMouseUp);
-      window.removeEventListener('mousemove', this.handleMouseMove);
+      // window.removeEventListener('wheel', this.handleScroll);
+      // window.removeEventListener('mousedown', this.handleMouseDown);
+      // window.removeEventListener('mouseup', this.handleMouseUp);
+      // window.removeEventListener('mousemove', this.handleMouseMove);
     },
 
     watch: {
-
       espGyroValuesJson() {
-        let self = this;
-        this.espGyroValuesJson.GyroValues.forEach(function(gyroValue) {
-          if (!self.gyroValues.time.includes(gyroValue.Time)) {
-            self.addGyroValues(
-              parseInt(gyroValue.Time),
-              parseFloat(gyroValue.Pitch),
-              parseFloat(gyroValue.Roll),
-              parseFloat(gyroValue.Yaw)
-            );
-          }
-        });
         this.updateChartData();
-      },
-
-      vuetifyHeight() {
-        this.updateChartHeight();
       }
-
     },
 
     methods: {
-
-      addGyroValues(time, pitch, roll, yaw) {
-        if (this.gyroValues.time.length == this.valuesLimit) {
-          this.gyroValues.time.shift();
-          this.gyroValues.pitch.shift();
-          this.gyroValues.roll.shift();
-          this.gyroValues.yaw.shift();
-        }
-
-        this.gyroValues.time.push(time);
-        this.gyroValues.pitch.push(pitch);
-        this.gyroValues.roll.push(roll);
-        this.gyroValues.yaw.push(yaw);
-      },
-
       updateChartData() {
         let fill = false;
         let borderWidth = 3;
         let chartDatasets = [];
 
-        if (this.angles.pitch.show) {
+        if (this.angleSettings.pitch.show) {
           chartDatasets.push({
             label: "Pitch",
-            data: this.gyroValues.pitch,
+            data: this.gyroChartData.pitch,
             fill: fill,
-            borderColor: this.angles.pitch.color,
+            borderColor: this.angleSettings.pitch.color,
             borderWidth: borderWidth
           });
         }
 
-        if (this.angles.roll.show) {
+        if (this.angleSettings.roll.show) {
           chartDatasets.push({
             label: "Roll",
-            data: this.gyroValues.roll,
+            data: this.gyroChartData.roll,
             fill: fill,
-            borderColor: this.angles.roll.color,
+            borderColor: this.angleSettings.roll.color,
             borderWidth: borderWidth
           });
         }
 
-        if (this.angles.yaw.show) {
+        if (this.angleSettings.yaw.show) {
           chartDatasets.push({
             label: "Yaw",
-            data: this.gyroValues.yaw,
+            data: this.gyroChartData.yaw,
             fill: fill,
-            borderColor: this.angles.yaw.color,
+            borderColor: this.angleSettings.yaw.color,
             borderWidth: borderWidth
           });
         }
 
         this.chartData = {
-          labels: this.gyroValues.time,
+          labels: this.gyroChartData.time,
           datasets: chartDatasets
         };
       },
-
-      updateChartHeight() {
-        let self = this;
-        setTimeout(function() {
-          self.chartHeight = 0.75 * self.vuetifyHeight;
-        }, 50);
-      },
-
       restoreDefaultView() {
         this.setMinY(-90);
         this.setMaxY(90);
       },
-
       getMinY() {
         return this.chartOptions.scales.yAxes[0].ticks.min;
       },
-
       getMaxY() {
         return this.chartOptions.scales.yAxes[0].ticks.max;
       },
-
       setMinY(newValue) {
         this.chartOptions.scales.yAxes[0].ticks.min = newValue;
       },
-
       setMaxY(newValue) {
         this.chartOptions.scales.yAxes[0].ticks.max = newValue;
       },
-
       getRangeY() {
-        return Math.abs(this.getMinY()) + Math.abs(this.getMaxY());
+        return Math.abs(this.getMaxY() - this.getMinY());
       },
-
       centerYByMiddleValue(middleValueY) {
         let moveValue = this.getRangeY() / 2;
         this.setMinY(middleValueY - moveValue);
         this.setMaxY(middleValueY + moveValue);
       },
-
       handleScroll(event) {
         let multiplier = this.mouseDown
           ? 0.1
@@ -256,17 +219,14 @@
           }
         }
       },
-
       handleMouseDown(event) {
         this.mouseDown = true;
         this.mousePosY = event.y;
       },
-
       handleMouseUp() {
         this.mouseDown = false; 
         this.mousePosY = 0;
       },
-
       handleMouseMove(event) {
         if (!this.mouseDown || Date.now() - this.previousTimeMoveY < 20)
         {
@@ -292,8 +252,6 @@
         this.mousePosY = event.y;
         this.previousTimeMoveY = Date.now();
       }
-
     }
-
   }
 </script>

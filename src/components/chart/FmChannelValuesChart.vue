@@ -1,5 +1,23 @@
 <template>
   <v-container>
+    <v-card class="ma-0">
+      <v-navigation-drawer
+        app
+        right
+        permanent
+        mini-variant
+        mini-variant-width=64
+        color="grey darken-4"
+      >
+        <v-list>
+          <v-list-item>
+            <v-icon color="deep-orange accent-3" v-if="fmSignalState == 0">mdi-wifi-cancel</v-icon>
+            <v-icon color="light-green accent-3" v-if="fmSignalState == 1">mdi-wifi-check</v-icon>
+            <v-icon color="cyan accent-2" v-if="fmSignalState == 2">mdi-wifi-sync</v-icon>
+          </v-list-item>
+        </v-list>
+      </v-navigation-drawer>
+    </v-card>
     <line-chart
       :style="'height: ' + chartHeight + 'px'"
       :chart-data="chartData"
@@ -15,7 +33,10 @@
     name: 'FmChannelValuesChart',
 
     props: {
-      channelColors: {
+      fmSignalState: {
+        type: Number
+      },
+      channelSettings: {
         type: Array
       }
     },
@@ -26,16 +47,6 @@
 
     data: () => ({
       chartData: {},
-      fmChannelValues: {
-        time: [],
-        ch1: [],
-        ch2: [],
-        ch3: [],
-        ch4: []
-      },
-      channelsCount: 4,
-      valuesLimit: 250,
-      chartHeight: 500,
       chartOptions: {
         responsive: true,
         maintainAspectRatio: false,
@@ -82,105 +93,81 @@
     }),
 
     computed: {
-
       espFmChannelValuesJson() {
         return this.$store.getters.espFmChannelValuesJson;
       },
-
-      vuetifyHeight () {
-        return this.$vuetify.breakpoint.height;
+      fmChannelChartData() {
+        return this.$store.getters.fmChannelChartData;
+      },
+      chartHeight () {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'xs': return 200;
+          case 'sm': return 230;
+          case 'md': return 500;
+          case 'lg': return 600;
+          case 'xl': return 800;
+          default : throw Error("Invalid $vuetify.breakpoint.name: " + this.$vuetify.breakpoint.name);
+        }
       }
-
     },
 
     watch: {
-
       espFmChannelValuesJson() {
-        let self = this;
-        this.espFmChannelValuesJson.FmChannelValues.forEach(function(fmValue) {
-          if (!self.fmChannelValues.time.includes(fmValue.Time)) {
-            self.addChannelValues(
-              parseInt(fmValue.Time),
-              parseInt(fmValue.ChannelValues[0]),
-              parseInt(fmValue.ChannelValues[1]),
-              parseInt(fmValue.ChannelValues[2]),
-              parseInt(fmValue.ChannelValues[3])
-            );
-          }
-        });
         this.updateChartData();
-      },
-
-      vuetifyHeight() {
-        this.updateChartHeight();
       }
-
     },
 
     methods: {
-
-      addChannelValues(time, ch1, ch2, ch3, ch4) {
-        if (this.fmChannelValues.time.length == this.valuesLimit) {
-          this.fmChannelValues.time.shift();
-          this.fmChannelValues.ch1.shift();
-          this.fmChannelValues.ch2.shift();
-          this.fmChannelValues.ch3.shift();
-          this.fmChannelValues.ch4.shift();
-        }
-
-        this.fmChannelValues.time.push(time);
-        this.fmChannelValues.ch1.push(ch1);
-        this.fmChannelValues.ch2.push(ch2);
-        this.fmChannelValues.ch3.push(ch3);
-        this.fmChannelValues.ch4.push(ch4);
-      },
-
       updateChartData() {
         let fill = false;
         let borderWidth = 3;
+        let chartDatasets = [];
+
+        if (this.channelSettings[0].show) {
+          chartDatasets.push({
+            label: "FM CH1",
+            data: this.fmChannelChartData.ch1,
+            fill: fill,
+            borderColor: this.channelSettings[0].color,
+            borderWidth: borderWidth
+          });
+        }
+
+        if (this.channelSettings[1].show) {
+          chartDatasets.push({
+            label: "FM CH2",
+            data: this.fmChannelChartData.ch2,
+            fill: fill,
+            borderColor: this.channelSettings[1].color,
+            borderWidth: borderWidth
+          });
+        }
+
+        if (this.channelSettings[2].show) {
+          chartDatasets.push({
+            label: "FM CH3",
+            data: this.fmChannelChartData.ch3,
+            fill: fill,
+            borderColor: this.channelSettings[2].color,
+            borderWidth: borderWidth
+          });
+        }
+
+        if (this.channelSettings[3].show) {
+          chartDatasets.push({
+            label: "FM CH4",
+            data: this.fmChannelChartData.ch4,
+            fill: fill,
+            borderColor: this.channelSettings[3].color,
+            borderWidth: borderWidth
+          });
+        }
 
         this.chartData = {
-          labels: this.fmChannelValues.time,
-          datasets: [
-            {
-              label: "FM CH1",
-              data: this.fmChannelValues.ch1,
-              fill: fill,
-              borderColor: this.channelColors[0],
-              borderWidth: borderWidth
-            },
-            {
-              label: "FM CH2",
-              data: this.fmChannelValues.ch2,
-              fill: fill,
-              borderColor: this.channelColors[1],
-              borderWidth: borderWidth
-            },
-            {
-              label: "FM CH3",
-              data: this.fmChannelValues.ch3,
-              fill: fill,
-              borderColor: this.channelColors[2],
-              borderWidth: borderWidth
-            },
-            {
-              label: "FM CH4",
-              data: this.fmChannelValues.ch4,
-              fill: fill,
-              borderColor: this.channelColors[3],
-              borderWidth: borderWidth
-            }
-          ]
+          labels: this.fmChannelChartData.time,
+          datasets: chartDatasets
         };
-      },
-
-      updateChartHeight() {
-        let self = this;
-        setTimeout(function() {
-          self.chartHeight = 0.75 * self.vuetifyHeight;
-        }, 50);
       }
-
     }
   }
 </script>
