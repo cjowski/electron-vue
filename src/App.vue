@@ -48,7 +48,7 @@ export default {
           }
         })
         .catch(error => console.log(error));
-    }, 100);
+    }, 50);
     
     this.fetchGyroInterval = setInterval(function(){
       fetch(self.getRequestPath("gyro"))

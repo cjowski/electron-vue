@@ -1,23 +1,8 @@
 <template>
   <v-container>
-    <v-card class="ma-0">
-      <v-navigation-drawer
-        app
-        right
-        permanent
-        mini-variant
-        mini-variant-width=64
-        color="grey darken-4"
-      >
-        <v-list>
-          <v-list-item>
-            <v-icon color="deep-orange accent-3" v-if="fmSignalState == 0">mdi-wifi-cancel</v-icon>
-            <v-icon color="light-green accent-3" v-if="fmSignalState == 1">mdi-wifi-check</v-icon>
-            <v-icon color="cyan accent-2" v-if="fmSignalState == 2">mdi-wifi-sync</v-icon>
-          </v-list-item>
-        </v-list>
-      </v-navigation-drawer>
-    </v-card>
+    <chart-scrollers
+      :axisY="chartOptions.scales.yAxes[0]"
+    />
     <line-chart
       :style="'height: ' + chartHeight + 'px'"
       :chart-data="chartData"
@@ -27,26 +12,27 @@
 </template>
 
 <script>
-  import LineChart from "./LineChart.vue"
+  import LineChart from "@/components/chart/LineChart"
+  import ChartScrollers from "@/components/chart/ChartScrollers"
 
   export default {
     name: 'FmChannelValuesChart',
 
     props: {
-      fmSignalState: {
-        type: Number
-      },
       channelSettings: {
         type: Array
       }
     },
 
     components: {
-      LineChart
+      LineChart,
+      ChartScrollers
     },
 
     data: () => ({
       chartData: {},
+      defaultMaxY: 2600,
+      defaultMinY: 800,
       chartOptions: {
         responsive: true,
         maintainAspectRatio: false,
@@ -167,6 +153,37 @@
           labels: this.fmChannelChartData.time,
           datasets: chartDatasets
         };
+      },
+      getAxisY() {
+        return this.chartOptions.scales.yAxes[0];
+      },
+      getRangeY() {
+        return Math.abs(this.getAxisY().ticks.max - this.getAxisY().ticks.min);
+      },
+      roundValue(value) {
+        return parseFloat(value.toFixed(0));
+      },
+      restoreDefaultView() {
+        this.getAxisY().ticks.min = this.defaultMinY;
+        this.getAxisY().ticks.max = this.defaultMaxY;
+      },
+      centerYByMiddleValue(middleValueY) {
+        let moveValue = this.getRangeY() / 2;
+        this.getAxisY().ticks.min = this.roundValue(middleValueY - moveValue);
+        this.getAxisY().ticks.max = this.roundValue(middleValueY + moveValue);
+      },
+      expandY(incrementValue) {
+        this.getAxisY().ticks.min = this.roundValue(this.getAxisY().ticks.min - incrementValue);
+        this.getAxisY().ticks.max = this.roundValue(this.getAxisY().ticks.max + incrementValue);
+      },
+      collapseY(incrementValue) {
+        let newMinY = this.getAxisY().ticks.min + incrementValue;
+        let newMaxY = this.getAxisY().ticks.max - incrementValue;
+
+        if (newMinY < newMaxY) {
+          this.getAxisY().ticks.min = this.roundValue(newMinY);
+          this.getAxisY().ticks.max = this.roundValue(newMaxY);
+        }
       }
     }
   }

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import FmChannelValuesJsonShower from '../views/FmChannelValuesJsonShower';
-import GyroJsonShower from '../views/GyroJsonShower.vue'
+import FmSection from '@/views/FmSection';
+import GyroSection from '@/views/GyroSection'
 
 Vue.use(VueRouter)
 
@@ -9,12 +9,12 @@ const routes = [
   {
     path: '/',
     name: 'fm',
-    component: FmChannelValuesJsonShower
+    component: FmSection
   },
   {
     path: '/gyro',
     name: 'gyro',
-    component: GyroJsonShower
+    component: GyroSection
   }
 ]
 

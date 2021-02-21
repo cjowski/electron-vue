@@ -1,23 +1,9 @@
 <template>
   <v-container>
-    <v-card class="ma-0">
-      <v-navigation-drawer
-        app
-        right
-        permanent
-        mini-variant
-        mini-variant-width=64
-        color="grey darken-4"
-      >
-        <v-list>
-          <v-list-item
-            @click="restoreDefaultView()"
-          >
-            <v-icon>mdi-restore</v-icon>
-          </v-list-item>
-        </v-list>
-      </v-navigation-drawer>
-    </v-card>
+    <chart-scrollers
+      :axisY="chartOptions.scales.yAxes[0]"
+      :roundDecimals=2
+    />
     <line-chart
       :style="'height: ' + chartHeight + 'px'"
       :chart-data="chartData"
@@ -27,7 +13,8 @@
 </template>
 
 <script>
-  import LineChart from "./LineChart.vue"
+  import LineChart from "@/components/chart/LineChart"
+  import ChartScrollers from "@/components/chart/ChartScrollers"
 
   export default {
     name: 'GyroValuesChart',
@@ -39,14 +26,14 @@
     },
 
     components: {
-      LineChart
+      LineChart,
+      ChartScrollers
     },
 
     data: () => ({
       chartData: {},
-      mouseDown: false,
-      mousePosY: 0,
-      previousTimeMoveY: 0,
+      defaultMaxY: 90,
+      defaultMinY: -90,
       chartOptions: {
         responsive: true,
         maintainAspectRatio: false,
@@ -111,20 +98,6 @@
       }
     },
 
-    created: function () {
-      // window.addEventListener('wheel', this.handleScroll);
-      // window.addEventListener('mousedown', this.handleMouseDown);
-      // window.addEventListener('mouseup', this.handleMouseUp);
-      // window.addEventListener('mousemove', this.handleMouseMove);
-    },
-
-    destroyed: function () {
-      // window.removeEventListener('wheel', this.handleScroll);
-      // window.removeEventListener('mousedown', this.handleMouseDown);
-      // window.removeEventListener('mouseup', this.handleMouseUp);
-      // window.removeEventListener('mousemove', this.handleMouseMove);
-    },
-
     watch: {
       espGyroValuesJson() {
         this.updateChartData();
@@ -172,85 +145,36 @@
           datasets: chartDatasets
         };
       },
-      restoreDefaultView() {
-        this.setMinY(-90);
-        this.setMaxY(90);
-      },
-      getMinY() {
-        return this.chartOptions.scales.yAxes[0].ticks.min;
-      },
-      getMaxY() {
-        return this.chartOptions.scales.yAxes[0].ticks.max;
-      },
-      setMinY(newValue) {
-        this.chartOptions.scales.yAxes[0].ticks.min = newValue;
-      },
-      setMaxY(newValue) {
-        this.chartOptions.scales.yAxes[0].ticks.max = newValue;
+      getAxisY() {
+        return this.chartOptions.scales.yAxes[0];
       },
       getRangeY() {
-        return Math.abs(this.getMaxY() - this.getMinY());
+        return Math.abs(this.getAxisY().ticks.max - this.getAxisY().ticks.min);
+      },
+      roundValue(value) {
+        return parseFloat(value.toFixed(2));
+      },
+      restoreDefaultView() {
+        this.getAxisY().ticks.min = this.defaultMinY;
+        this.getAxisY().ticks.max = this.defaultMaxY;
       },
       centerYByMiddleValue(middleValueY) {
         let moveValue = this.getRangeY() / 2;
-        this.setMinY(middleValueY - moveValue);
-        this.setMaxY(middleValueY + moveValue);
+        this.getAxisY().ticks.min = this.roundValue(middleValueY - moveValue);
+        this.getAxisY().ticks.max = this.roundValue(middleValueY + moveValue);
       },
-      handleScroll(event) {
-        let multiplier = this.mouseDown
-          ? 0.1
-          : 0.025;
-
-        let incrementValue = multiplier * this.getRangeY();
-
-        if (event.deltaY < 0)
-        {
-          this.setMinY(this.getMinY() - incrementValue);
-          this.setMaxY(this.getMaxY() + incrementValue);
-        }
-        else
-        {
-          let newMinY = this.getMinY() + incrementValue;
-          let newMaxY = this.getMaxY() - incrementValue;
-
-          if (newMinY < newMaxY) {
-            this.setMinY(newMinY);
-            this.setMaxY(newMaxY);
-          }
-        }
+      expandY(incrementValue) {
+        this.getAxisY().ticks.min = this.roundValue(this.getAxisY().ticks.min - incrementValue);
+        this.getAxisY().ticks.max = this.roundValue(this.getAxisY().ticks.max + incrementValue);
       },
-      handleMouseDown(event) {
-        this.mouseDown = true;
-        this.mousePosY = event.y;
-      },
-      handleMouseUp() {
-        this.mouseDown = false; 
-        this.mousePosY = 0;
-      },
-      handleMouseMove(event) {
-        if (!this.mouseDown || Date.now() - this.previousTimeMoveY < 20)
-        {
-          return;
+      collapseY(incrementValue) {
+        let newMinY = this.getAxisY().ticks.min + incrementValue;
+        let newMaxY = this.getAxisY().ticks.max - incrementValue;
+
+        if (newMinY < newMaxY) {
+          this.getAxisY().ticks.min = this.roundValue(newMinY);
+          this.getAxisY().ticks.max = this.roundValue(newMaxY);
         }
-
-        let currentRangeY = this.getRangeY();
-
-        let incrementValue = currentRangeY > 1
-          ? 0.025 * currentRangeY
-          : 0.00005 * currentRangeY;
-
-        if (this.mousePosY - event.y > 0) {
-          this.setMinY(this.getMinY() + incrementValue);
-          this.setMaxY(this.getMaxY() + incrementValue);
-        }
-        else
-        {
-          this.setMinY(this.getMinY() - incrementValue);
-          this.setMaxY(this.getMaxY() - incrementValue);
-        }
-
-        this.mousePosY = event.y;
-        this.previousTimeMoveY = Date.now();
       }
     }
   }
