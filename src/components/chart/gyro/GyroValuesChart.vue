@@ -5,9 +5,21 @@
       :roundDecimals=2
     />
     <line-chart
-      :style="'height: ' + chartHeight + 'px'"
+      :style="'height: ' + chartHeight + 'px; width: calc(100% - 40px);'"
       :chart-data="chartData"
       :options="chartOptions"
+    />
+    <chart-tools
+      :axisY="chartOptions.scales.yAxes[0]"
+      :defaultMaxY="90"
+      :defaultMinY="-90"
+      :maxExpandValue="5"
+      ref="gyroChartToolsRef"
+    />
+    <gyro-values-boxes
+      :timeSettings="timeSettings"
+      :angleSettings="angleSettings"
+      :gyroChartToolsRef="gyroChartToolsRef"
     />
   </v-container>
 </template>
@@ -15,25 +27,39 @@
 <script>
   import LineChart from "@/components/chart/LineChart"
   import ChartScrollers from "@/components/chart/ChartScrollers"
+  import ChartTools from "@/components/chart/ChartTools"
+  import GyroValuesBoxes from "@/components/chart/gyro/GyroValuesBoxes"
 
   export default {
     name: 'GyroValuesChart',
 
-    props: {
-      angleSettings: {
-        type: Object
-      }
-    },
-
     components: {
       LineChart,
-      ChartScrollers
+      ChartScrollers,
+      ChartTools,
+      GyroValuesBoxes
     },
 
     data: () => ({
       chartData: {},
-      defaultMaxY: 90,
-      defaultMinY: -90,
+      timeSettings: {
+        show: true,
+        color: "#4d4d4d"
+      },
+      angleSettings: {
+        pitch: {
+          show: true,
+          color: "#ebc437"
+        },
+        roll: {
+          show: true,
+          color: "#dd2222"
+        },
+        yaw: {
+          show: true,
+          color: "#1eb370"
+        }
+      },
       chartOptions: {
         responsive: true,
         maintainAspectRatio: false,
@@ -76,15 +102,20 @@
             fontFamily: "Calibri"
           }
         }
-      }
+      },
+      gyroChartToolsRef: null
     }),
+
+    mounted () {
+      this.gyroChartToolsRef = this.$refs.gyroChartToolsRef;
+    },
 
     computed: {
       espGyroValuesJson() {
-        return this.$store.getters.espGyroValuesJson;
+        return this.$store.getters['gyro/espGyroValuesJson'];
       },
       gyroChartData() {
-        return this.$store.getters.gyroChartData;
+        return this.$store.getters['gyro/gyroChartData'];
       },
       chartHeight () {
         switch (this.$vuetify.breakpoint.name) {
@@ -144,37 +175,6 @@
           labels: this.gyroChartData.time,
           datasets: chartDatasets
         };
-      },
-      getAxisY() {
-        return this.chartOptions.scales.yAxes[0];
-      },
-      getRangeY() {
-        return Math.abs(this.getAxisY().ticks.max - this.getAxisY().ticks.min);
-      },
-      roundValue(value) {
-        return parseFloat(value.toFixed(2));
-      },
-      restoreDefaultView() {
-        this.getAxisY().ticks.min = this.defaultMinY;
-        this.getAxisY().ticks.max = this.defaultMaxY;
-      },
-      centerYByMiddleValue(middleValueY) {
-        let moveValue = this.getRangeY() / 2;
-        this.getAxisY().ticks.min = this.roundValue(middleValueY - moveValue);
-        this.getAxisY().ticks.max = this.roundValue(middleValueY + moveValue);
-      },
-      expandY(incrementValue) {
-        this.getAxisY().ticks.min = this.roundValue(this.getAxisY().ticks.min - incrementValue);
-        this.getAxisY().ticks.max = this.roundValue(this.getAxisY().ticks.max + incrementValue);
-      },
-      collapseY(incrementValue) {
-        let newMinY = this.getAxisY().ticks.min + incrementValue;
-        let newMaxY = this.getAxisY().ticks.max - incrementValue;
-
-        if (newMinY < newMaxY) {
-          this.getAxisY().ticks.min = this.roundValue(newMinY);
-          this.getAxisY().ticks.max = this.roundValue(newMaxY);
-        }
       }
     }
   }

@@ -1,6 +1,6 @@
 <template>
-  <v-card-actions class="ma-0 pt-0">
-    <v-col class="ma-0 pa-1">
+  <v-card-actions class="ma-0 pa-0 pb-2">
+    <v-col class="ma-0 pa-0 pb-1 pt-1">
       <chart-value-box
         v-model="timeSettings"
         :chartValue="timeInSeconds + ' (s)'"
@@ -9,11 +9,12 @@
     <v-col
       v-for="(fmChannelValue, index) in fmChannelValues"
       :key="index"
-      class="ma-0 pa-1"
+      class="ma-0 pa-0 pb-1 pt-1"
     >
       <chart-value-box
         v-model="channelSettings[index]"
         :chartValue="fmChannelValue.toString()"
+        :onClickFunction="function () { fmChartToolsRef.centerYByMiddleValue(fmChannelValue) }"
         showEye
       />
     </v-col>
@@ -37,14 +38,14 @@
       channelSettings: {
         type: Array
       },
-      chartRef: {
+      fmChartToolsRef: {
         type: Object
       }
     },
 
     computed: {
       espFmChannelValuesJson() {
-        return this.$store.getters.espFmChannelValuesJson;
+        return this.$store.getters['fm/espFmChannelValuesJson'];
       },
       lastFmChannelValues() {
         if (this.espFmChannelValuesJson == null) {

@@ -52,7 +52,7 @@ export default {
       return Math.abs(this.axisY.ticks.max - this.axisY.ticks.min);
     },
     roundValue(value) {
-      return parseFloat(value.toFixed(roundDecimals));
+      return parseFloat(value.toFixed(this.roundDecimals));
     },
     scrollUp() {
       let incrementValue = 0.02 * this.getRangeY();

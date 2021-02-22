@@ -8,25 +8,25 @@
     </v-col>
     <v-col class="ma-0 pa-1">
       <chart-value-box
-        v-model="anglesSettings.pitch"
+        v-model="angleSettings.pitch"
         :chartValue="pitch.toFixed(2)"
-        :onClickFunction="function () { chartRef.centerYByMiddleValue(pitch) }"
+        :onClickFunction="function () { gyroChartToolsRef.centerYByMiddleValue(pitch) }"
         showEye
       />
     </v-col>
     <v-col class="ma-0 pa-1">
       <chart-value-box
-        v-model="anglesSettings.roll"
+        v-model="angleSettings.roll"
         :chartValue="roll.toFixed(2)"
-        :onClickFunction="function () { chartRef.centerYByMiddleValue(roll) }"
+        :onClickFunction="function () { gyroChartToolsRef.centerYByMiddleValue(roll) }"
         showEye
       />
     </v-col>
     <v-col class="ma-0 pa-1">
       <chart-value-box
-        v-model="anglesSettings.yaw"
+        v-model="angleSettings.yaw"
         :chartValue="yaw.toFixed(2)"
-        :onClickFunction="function () { chartRef.centerYByMiddleValue(yaw) }"
+        :onClickFunction="function () { gyroChartToolsRef.centerYByMiddleValue(yaw) }"
         showEye
       />
     </v-col>
@@ -47,17 +47,17 @@
       timeSettings: {
         type: Object
       },
-      anglesSettings: {
+      angleSettings: {
         type: Object
       },
-      chartRef: {
+      gyroChartToolsRef: {
         type: Object
       }
     },
 
     computed: {
       espGyroValuesJson() {
-        return this.$store.getters.espGyroValuesJson;
+        return this.$store.getters['gyro/espGyroValuesJson'];
       },
       lastEspGyroValues() {
         if (this.espGyroValuesJson == null) {

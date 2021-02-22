@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import Toolbar from './components/Toolbar'
+import Toolbar from '@/components/Toolbar'
 
 export default {
   name: 'App',
@@ -43,8 +43,8 @@ export default {
         .then(response => response.json())
         .then(data => {
           if (data != null) {
-            self.$store.commit('setEspFmChannelValuesJson', data);
-            self.$store.commit('addFmChannelValues', data);
+            self.$store.commit('fm/setEspFmChannelValuesJson', data);
+            self.$store.commit('fm/addFmChannelValues', data);
           }
         })
         .catch(error => console.log(error));
@@ -56,8 +56,8 @@ export default {
         .then(response => response.json())
         .then(data => {
           if (data != null) {
-            self.$store.commit('setEspGyroValuesJson', data);
-            self.$store.commit('addGyroValues', data);
+            self.$store.commit('gyro/setEspGyroValuesJson', data);
+            self.$store.commit('gyro/addGyroValues', data);
           }
         })
         .catch(error => console.log(error));
