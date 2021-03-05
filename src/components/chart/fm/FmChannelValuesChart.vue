@@ -30,6 +30,7 @@
   import ChartScrollers from "@/components/chart/ChartScrollers"
   import ChartTools from "@/components/chart/ChartTools"
   import FmChannelValuesBoxes from "@/components/chart/fm/FmChannelValuesBoxes"
+  import commonMethods from "@/common/commonMethods"
 
   export default {
     name: 'FmChannelValuesChart',
@@ -123,14 +124,9 @@
         return this.$store.getters['fm/fmChannelChartData'];
       },
       chartHeight () {
-        switch (this.$vuetify.breakpoint.name) {
-          case 'xs': return 200;
-          case 'sm': return 230;
-          case 'md': return 500;
-          case 'lg': return 600;
-          case 'xl': return 800;
-          default : throw Error("Invalid $vuetify.breakpoint.name: " + this.$vuetify.breakpoint.name);
-        }
+        return commonMethods.getChartHeight(
+          this.$vuetify.breakpoint.name
+        );
       }
     },
 
@@ -143,7 +139,7 @@
     methods: {
       updateChartData() {
         let fill = false;
-        let borderWidth = 3;
+        let borderWidth = 2;
         let chartDatasets = [];
 
         if (this.channelSettings[0].show) {

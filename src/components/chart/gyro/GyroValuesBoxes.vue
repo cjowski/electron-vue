@@ -55,6 +55,14 @@
       }
     },
 
+    data: () => ({
+      previousAngleSettings: null
+    }),
+
+    created() {
+      this.previousAngleSettings = JSON.parse(JSON.stringify(this.angleSettings));
+    },
+
     computed: {
       espGyroValuesJson() {
         return this.$store.getters['gyro/espGyroValuesJson'];
@@ -88,6 +96,27 @@
           return -1;
         }
         return parseFloat(this.lastEspGyroValues.Yaw);
+      }
+    },
+
+    watch: {
+      angleSettings: {
+        deep: true,
+        handler: function () {
+          if (this.angleSettings.pitch.locked != this.previousAngleSettings.pitch.locked) {
+            this.angleSettings.roll.locked = false;
+            this.angleSettings.yaw.locked = false;
+          }
+          else if (this.angleSettings.roll.locked != this.previousAngleSettings.roll.locked) {
+            this.angleSettings.pitch.locked = false;
+            this.angleSettings.yaw.locked = false;
+          }
+          else if (this.angleSettings.yaw.locked != this.previousAngleSettings.yaw.locked) {
+            this.angleSettings.pitch.locked = false;
+            this.angleSettings.roll.locked = false;
+          }
+          this.previousAngleSettings = JSON.parse(JSON.stringify(this.angleSettings));
+        }
       }
     }
   }

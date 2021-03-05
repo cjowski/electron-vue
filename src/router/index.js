@@ -2,12 +2,18 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import FmSection from '@/views/FmSection';
 import GyroSection from '@/views/GyroSection'
+import EspConnectSection from '@/views/EspConnectSection'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
+    name: 'esp',
+    component: EspConnectSection
+  },
+  {
+    path: '/fm',
     name: 'fm',
     component: FmSection
   },

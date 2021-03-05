@@ -6,6 +6,9 @@
   >
     <v-toolbar-items>
       <v-btn text :x-large="isLargeDevice" width=150 router to="/">
+        ESP
+      </v-btn>
+      <v-btn text :x-large="isLargeDevice" width=150 router to="/fm">
         FM
       </v-btn>
       <v-btn text :x-large="isLargeDevice" width=150 router to="/gyro">

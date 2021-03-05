@@ -29,6 +29,7 @@
   import ChartScrollers from "@/components/chart/ChartScrollers"
   import ChartTools from "@/components/chart/ChartTools"
   import GyroValuesBoxes from "@/components/chart/gyro/GyroValuesBoxes"
+  import commonMethods from "@/common/commonMethods"
 
   export default {
     name: 'GyroValuesChart',
@@ -44,19 +45,23 @@
       chartData: {},
       timeSettings: {
         show: true,
+        locked: false,
         color: "#4d4d4d"
       },
       angleSettings: {
         pitch: {
           show: true,
+          locked: false,
           color: "#ebc437"
         },
         roll: {
           show: true,
+          locked: false,
           color: "#dd2222"
         },
         yaw: {
           show: true,
+          locked: false,
           color: "#1eb370"
         }
       },
@@ -118,14 +123,9 @@
         return this.$store.getters['gyro/gyroChartData'];
       },
       chartHeight () {
-        switch (this.$vuetify.breakpoint.name) {
-          case 'xs': return 200;
-          case 'sm': return 230;
-          case 'md': return 500;
-          case 'lg': return 600;
-          case 'xl': return 800;
-          default : throw Error("Invalid $vuetify.breakpoint.name: " + this.$vuetify.breakpoint.name);
-        }
+        return commonMethods.getChartHeight(
+          this.$vuetify.breakpoint.name
+        );
       }
     },
 
@@ -138,8 +138,9 @@
     methods: {
       updateChartData() {
         let fill = false;
-        let borderWidth = 3;
+        let borderWidth = 2;
         let chartDatasets = [];
+        this.lockAngles();
 
         if (this.angleSettings.pitch.show) {
           chartDatasets.push({
@@ -175,6 +176,20 @@
           labels: this.gyroChartData.time,
           datasets: chartDatasets
         };
+      },
+      lockAngles() {
+        if (this.angleSettings.pitch.locked) {
+          this.lockAngle(this.gyroChartData.pitch);
+        }
+        if (this.angleSettings.roll.locked) {
+          this.lockAngle(this.gyroChartData.roll);
+        }
+        if (this.angleSettings.yaw.locked) {
+          this.lockAngle(this.gyroChartData.yaw);
+        }
+      },
+      lockAngle(angleData) {
+        this.gyroChartToolsRef.centerYByMiddleValue(angleData[angleData.length - 1]);
       }
     }
   }
