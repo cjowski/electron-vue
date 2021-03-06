@@ -8,7 +8,8 @@ export default {
     espWifiIP: "192.168.1.45",
     espPort: "80",
     selectedEspMode: 0,
-    connected: false
+    connected: false,
+    connectInProgress: false
   },
 
   getters: {
@@ -36,12 +37,19 @@ export default {
     },
     connected: state => {
       return state.connected;
+    },
+    connectInProgress: state => {
+      return state.connectInProgress;
     }
   },
 
   mutations: {
     setEspIP(state, newEspIP) {
-      state.espIP = newEspIP;
+      switch (state.selectedEspMode) {
+        case commonEnums.espModes.accessPoint: return state.espAccessPointIP = newEspIP;
+        case commonEnums.espModes.wifi: return state.espWifiIP = newEspIP;
+        default: throw Error("Invalid ESP mode: " + state.selectedEspMode);
+      }
     },
     setSelectedEspMode(state, newSelectedEspMode) {
       state.selectedEspMode = newSelectedEspMode;
@@ -51,6 +59,9 @@ export default {
     },
     setConnected(state, newState) {
       state.connected = newState;
+    },
+    setConnectInProgress(state, newState) {
+      state.connectInProgress = newState;
     }
   },
 

@@ -15,7 +15,9 @@
       class="chart-value-box-btn"
       @click="onClickFunction()"
       @mousedown="onLongClickStart()"
+      @mouseup="onLongClickStop()"
       @touchstart="onLongClickStart()"
+      @touchend="onLongClickStop()"
     >
       {{chartValue}}
     </div>
@@ -70,11 +72,14 @@ export default {
         }
       }
     },
-    lock() {
+    onLongClickStop () {
       if (this.longClickInterval) {
-        this.value.locked = true;
         clearInterval(this.longClickInterval);
       }
+    },
+    lock() {
+      this.value.locked = true;
+      clearInterval(this.longClickInterval);
     }
   }
 }
