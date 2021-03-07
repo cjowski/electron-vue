@@ -38,6 +38,12 @@ export default {
     connected: state => {
       return state.connected;
     },
+    accessPointConnected: state => {
+      return state.connected && state.selectedEspMode == commonEnums.espModes.accessPoint;
+    },
+    wifiConnected: state => {
+      return state.connected && state.selectedEspMode == commonEnums.espModes.wifi;
+    },
     connectInProgress: state => {
       return state.connectInProgress;
     }

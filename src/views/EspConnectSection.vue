@@ -3,16 +3,22 @@
     <v-container>
       <esp-connect-spinner v-model="espConnectInProgress" />
       <v-row>
-        <v-col @click="selectedEspMode = espModes.accessPoint">
+        <v-col
+          @click="selectedEspMode = espModes.accessPoint"
+          class="pr-1"
+        >
           <esp-access-point
-            v-model="espAccessPointIP"
             :selected="selectedEspMode == espModes.accessPoint"
+            ref="espAccessPointRef"
           />
         </v-col>
-        <v-col @click="selectedEspMode = espModes.wifi">
+        <v-col
+          @click="selectedEspMode = espModes.wifi"
+          class="pl-1"
+        >
           <esp-wifi
-            v-model="espWifiIP"
             :selected="selectedEspMode == espModes.wifi"
+            ref="espWifiRef"
           />
         </v-col>
       </v-row>
@@ -49,13 +55,31 @@
       espAccessPointIP: "",
       espWifiIP: "",
       selectedEspMode: -1,
-      espModes: commonEnums.espModes
+      espModes: commonEnums.espModes,
+      espAccessPointRef: null,
+      espWifiRef: null
     }),
 
     created() {
       this.espAccessPointIP = this.$store.getters['espConnect/espAccessPointIP'];
       this.espWifiIP = this.$store.getters['espConnect/espWifiIP'];
       this.selectedEspMode = this.$store.getters['espConnect/selectedEspMode'];
+    },
+
+    mounted () {
+      this.espAccessPointRef = this.$refs.espAccessPointRef;
+      this.espWifiRef = this.$refs.espWifiRef;
+
+      let self = this;
+      this.$watch(
+        "$refs.espAccessPointRef.espAccessPointIP",
+        (newIP) => self.espAccessPointIP = newIP
+      );
+
+      this.$watch(
+        "$refs.espWifiRef.espWifiIP",
+        (newIP) => self.espWifiIP = newIP
+      );
     },
 
     computed: {

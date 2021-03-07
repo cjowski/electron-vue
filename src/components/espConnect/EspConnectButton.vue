@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-btn
-      v-if="!connected"
+      v-if="!modeConnected"
       @click="connect()"
       color="light-green accent-3"
       block
@@ -55,8 +55,9 @@
       espPort () {
         return this.$store.getters['espConnect/espPort']
       },
-      connected () {
-        return this.$store.getters['espConnect/connected'];
+      modeConnected () {
+        return this.$store.getters['espConnect/connected']
+          && this.selectedEspMode == this.$store.getters['espConnect/selectedEspMode'];
       },
       requestPath () {
         return "http://" + this.espIP + ":" + this.espPort +"/";

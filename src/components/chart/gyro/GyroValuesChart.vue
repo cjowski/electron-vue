@@ -45,7 +45,6 @@
       chartData: {},
       timeSettings: {
         show: true,
-        locked: false,
         color: "#4d4d4d"
       },
       angleSettings: {

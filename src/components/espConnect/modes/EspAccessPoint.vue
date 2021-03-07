@@ -4,67 +4,75 @@
     class="esp-mode-card"
     :style="selected ? selectedCardStyle : notSelectedCardStyle"
   >
-    <v-card-title>
-      <div class="esp-mode-card-title">
+    <div style="width: calc(100% - 50px);">
+      <v-card-title class="esp-mode-card-title">
         ESP32 Access Point
-      </div>
-      <v-spacer />
-      <esp-connected-icon :connected="connected" />
-    </v-card-title>
-    <v-card-text class="pb-0">
-      <v-row>
-        <v-col cols=8>
-          <v-text-field
-            v-model="value"
-            label="ESP IP"
-            outlined
-          />
-        </v-col>
-        <v-col cols=4>
-          <v-text-field
-            v-model="espPort"
-            label="PORT"
-            outlined
-            disabled
-          />
-        </v-col>
-      </v-row>
-    </v-card-text>
+      </v-card-title>
+      <v-card-text class="pb-0">
+        <v-row>
+          <v-col cols=8 class="pl-1 pr-1">
+            <v-text-field
+              v-model="espAccessPointIP"
+              label="ESP IP"
+              outlined
+            />
+          </v-col>
+          <v-col cols=4 class="pl-1 pr-1">
+            <v-text-field
+              v-model="espPort"
+              label="PORT"
+              outlined
+              disabled
+            />
+          </v-col>
+        </v-row>
+      </v-card-text>
+    </div>
+    <esp-mode-tools
+      :espConnected="connected"
+      :restoreDefault="setDefault"
+      editCredentials
+    />
   </v-card>
 </template>
 
 <script>
-  import EspConnectedIcon from "@/components/espConnect/EspConnectedIcon"
+  import EspModeTools from "@/components/espConnect/EspModeTools"
 
   export default {
     name: "EspAccessPoint",
 
     components: {
-      EspConnectedIcon
+      EspModeTools
     },
 
     data: () => ({
+      espAccessPointIP: "",
       espPort: "",
       selectedCardStyle: "border: 2px solid #03A9F4",
       notSelectedCardStyle: "border: 2px solid #363636"
     }),
 
     props: {
-      value: {
-        type: String
-      },
       selected: {
         type: Boolean
       }
     },
 
     created() {
-      this.espPort = this.$store.getters['espConnect/espPort'];
+      this.setDefault();
     },
 
     computed: {
       connected () {
-        return this.$store.getters['espConnect/connected'];
+        return this.$store.getters['espConnect/accessPointConnected'];
+      }
+    },
+
+    methods: {
+      setDefault () {
+        this.espAccessPointIP = this.$store.getters['espConnect/espAccessPointIP'];
+        this.espPort = this.$store.getters['espConnect/espPort'];
       }
     }
   }

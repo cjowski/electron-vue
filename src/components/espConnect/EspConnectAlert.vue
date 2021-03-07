@@ -1,5 +1,5 @@
 <template>
-  <v-expand-transition>
+  <v-scale-transition>
     <v-alert
       v-if="status == alertStatuses.connected"
       dense
@@ -27,7 +27,7 @@
     >
       {{ "Connection failed (" + message + ")"}}
     </v-alert>
-  </v-expand-transition>
+  </v-scale-transition>
 </template>
 
 <script>
