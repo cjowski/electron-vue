@@ -1,7 +1,17 @@
 <template>
   <div>
     <v-btn
-      v-if="!modeConnected"
+      v-if="setWifiCredentials"
+      @click="connectAccessPointToWifi()"
+      color="light-green accent-3"
+      block
+      outlined
+      :disabled="!modeConnected"
+    >
+      Connect to wifi
+    </v-btn>
+    <v-btn
+      v-else-if="!modeConnected"
       @click="connect()"
       color="light-green accent-3"
       block
@@ -39,7 +49,8 @@
     data: () => ({
       alertStatus: commonEnums.alertStatuses.none,
       alertMessage: "",
-      alertStatuses: commonEnums.alertStatuses
+      alertStatuses: commonEnums.alertStatuses,
+      espModes: commonEnums.espModes
     }),
 
     props: {
@@ -48,6 +59,15 @@
       },
       espIP: {
         type: String
+      },
+      espWifiSSID: {
+        type: String
+      },
+      espWifiPassword: {
+        type: String
+      },
+      setWifiCredentials: {
+        type: Boolean
       }
     },
 
@@ -65,6 +85,55 @@
     },
 
     methods: {
+      connectAccessPointToWifi() {
+        this.setConnectInProgress(true);
+        this.hideAlert();
+        console.log(this.espWifiSSID)
+        console.log(this.espWifiPassword)
+
+        let self = this;
+        let didTimeOut = false;
+
+        new Promise((resolve, reject) => {
+          let timeout = setTimeout(function() {
+            didTimeOut = true;
+            reject(new Error('Request timed out'));
+          }, 5000);
+
+          fetch(
+            self.requestPath + "wifiConnect",
+            {
+              method: "POST",
+              body: JSON.stringify({
+                ssid: self.espWifiSSID,
+                password: self.espWifiPassword
+              })
+            }
+          )
+          .then(response => {
+              clearTimeout(timeout);
+              if (!didTimeOut) {
+                resolve(response)
+              }
+            }
+          )
+          .catch(error => console.log(error));
+        })
+        .then(response => response.json())
+        .then(status => {
+          if (status != null && status.connected) {
+            // self.setEspConnected();
+            self.setConnectInProgress(false);
+            console.log(status.toString())
+          }
+          else {
+            self.setConnectionError("Invalid response");
+          }
+        })
+        .catch(error => {
+          self.setConnectionError(error.toString());
+        });
+      },
       connect() {
         this.setConnectInProgress(true);
         this.hideAlert();
@@ -78,14 +147,14 @@
           }, 5000);
 
           fetch(self.requestPath + "status")
-            .then(response => {
-                clearTimeout(timeout);
-                if (!didTimeOut) {
-                  resolve(response)
-                }
+          .then(response => {
+              clearTimeout(timeout);
+              if (!didTimeOut) {
+                resolve(response)
               }
-            )
-            .catch(error => console.log(error));
+            }
+          )
+          .catch(error => console.log(error));
         })
         .then(response => response.json())
         .then(status => {
@@ -95,10 +164,8 @@
           else {
             self.setConnectionError("Invalid response");
           }
-          self.setConnectInProgress(false);
         })
         .catch(error => {
-          self.setConnectInProgress(false);
           self.setConnectionError(error.toString());
         });
       },
@@ -110,10 +177,12 @@
         this.$store.commit('espConnect/setEspIP', this.espIP);
         this.$store.commit('espConnect/setConnected', true);
         this.alertStatus = this.alertStatuses.connected;
+        this.setConnectInProgress(false);
       },
       setConnectionError(errorMessage) {
         this.alertStatus = this.alertStatuses.connectionFailed;
         this.alertMessage = errorMessage;
+        this.setConnectInProgress(false);
         console.log(this.alertMessage);
       },
       disconnect() {

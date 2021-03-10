@@ -3,6 +3,7 @@
     right
     permanent
     absolute
+    floating
     mini-variant
     mini-variant-width=50
     color="#1E1E1E"
@@ -18,7 +19,10 @@
       >
         <v-icon>mdi-autorenew</v-icon>
       </v-list-item>
-      <v-list-item v-if="editCredentials">
+      <v-list-item
+        v-if="editCredentials"
+        @click="editCredentials"
+      >
         <v-icon>mdi-cog-transfer-outline</v-icon>
       </v-list-item>
     </v-list>
@@ -44,8 +48,8 @@
         default: null
       },
       editCredentials: {
-        type: Boolean,
-        default: false
+        type: Function,
+        default: null
       }
     }
   }

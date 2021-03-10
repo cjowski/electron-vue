@@ -10,6 +10,7 @@
 </template>
 
 <script>
+  import configJson from '@/config.json' 
   import Toolbar from '@/components/Toolbar'
 
   export default {
@@ -22,6 +23,14 @@
 
     components: {
       Toolbar
+    },
+
+    created() {
+      this.$store.commit('espConnect/setEspAccessPointIP', configJson.espAccessPointIP);
+      this.$store.commit('espConnect/setEspWifiIP', configJson.espWifiIP);
+      this.$store.commit('espConnect/setEspPort', configJson.espPort);
+      this.$store.commit('espConnect/setEspWifiSSID', configJson.espWifiSSID);
+      this.$store.commit('espConnect/setEspWifiPassword', configJson.espWifiPassword);
     },
 
     computed: {

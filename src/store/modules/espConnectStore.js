@@ -4,9 +4,11 @@ export default {
   namespaced: true,
   
   state: {
-    espAccessPointIP: "192.168.4.1",
-    espWifiIP: "192.168.1.45",
-    espPort: "80",
+    espAccessPointIP: "",
+    espWifiIP: "",
+    espPort: "",
+    espWifiSSID: "",
+    espWifiPassword: "",
     selectedEspMode: 0,
     connected: false,
     connectInProgress: false
@@ -29,6 +31,12 @@ export default {
     espPort: state => {
       return state.espPort;
     },
+    espWifiSSID: state => {
+      return state.espWifiSSID;
+    },
+    espWifiPassword: state => {
+      return state.espWifiPassword;
+    },
     espRequestPath: (state, getters) => {
       return "http://" + getters.espIP + ":" + state.espPort + "/";
     },
@@ -50,6 +58,12 @@ export default {
   },
 
   mutations: {
+    setEspAccessPointIP(state, newEspAccessPointIP) {
+      state.espAccessPointIP = newEspAccessPointIP;
+    },
+    setEspWifiIP(state, newEspWifiIP) {
+      state.espWifiIP = newEspWifiIP;
+    },
     setEspIP(state, newEspIP) {
       switch (state.selectedEspMode) {
         case commonEnums.espModes.accessPoint: return state.espAccessPointIP = newEspIP;
@@ -62,6 +76,12 @@ export default {
     },
     setEspPort(state, newEspPort) {
       state.espPort = newEspPort;
+    },
+    setEspWifiSSID(state, newEspWifiSSID) {
+      state.espWifiSSID = newEspWifiSSID;
+    },
+    setEspWifiPassword(state, newEspWifiPassword) {
+      state.espWifiPassword = newEspWifiPassword;
     },
     setConnected(state, newState) {
       state.connected = newState;

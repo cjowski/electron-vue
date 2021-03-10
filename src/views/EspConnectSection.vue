@@ -13,6 +13,7 @@
           />
         </v-col>
         <v-col
+          v-if="wifiModeVisible"
           @click="selectedEspMode = espModes.wifi"
           class="pl-1"
         >
@@ -27,6 +28,9 @@
           <esp-connect-button
             :selectedEspMode="selectedEspMode"
             :espIP="espIP"
+            :espWifiSSID="espWifiSSID"
+            :espWifiPassword="espWifiPassword"
+            :setWifiCredentials="setWifiCredentials"
           />
         </v-col>
       </v-row>
@@ -54,8 +58,12 @@
     data: () => ({
       espAccessPointIP: "",
       espWifiIP: "",
+      espWifiSSID: "",
+      espWifiPassword: "",
       selectedEspMode: -1,
       espModes: commonEnums.espModes,
+      wifiModeVisible: true,
+      setWifiCredentials: false,
       espAccessPointRef: null,
       espWifiRef: null
     }),
@@ -64,22 +72,14 @@
       this.espAccessPointIP = this.$store.getters['espConnect/espAccessPointIP'];
       this.espWifiIP = this.$store.getters['espConnect/espWifiIP'];
       this.selectedEspMode = this.$store.getters['espConnect/selectedEspMode'];
+      this.espWifiSSID = this.$store.getters['espConnect/espWifiSSID'];
+      this.espWifiPassword = this.$store.getters['espConnect/espWifiPassword'];
     },
 
     mounted () {
       this.espAccessPointRef = this.$refs.espAccessPointRef;
       this.espWifiRef = this.$refs.espWifiRef;
-
-      let self = this;
-      this.$watch(
-        "$refs.espAccessPointRef.espAccessPointIP",
-        (newIP) => self.espAccessPointIP = newIP
-      );
-
-      this.$watch(
-        "$refs.espWifiRef.espWifiIP",
-        (newIP) => self.espWifiIP = newIP
-      );
+      this.initializeWatchers();
     },
 
     computed: {
@@ -92,6 +92,41 @@
       },
       espConnectInProgress () {
         return this.$store.getters['espConnect/connectInProgress'];
+      }
+    },
+
+    methods: {
+      initializeWatchers() {
+        let self = this;
+        this.$watch(
+          "$refs.espAccessPointRef.espAccessPointIP",
+          (newIP) => self.espAccessPointIP = newIP
+        );
+
+        this.$watch(
+          "$refs.espAccessPointRef.espWifiSSID",
+          (newEspWifiSSID) => self.espWifiSSID = newEspWifiSSID
+        );
+
+        this.$watch(
+          "$refs.espAccessPointRef.espWifiPassword",
+          (newEspWifiPassword) => self.espWifiPassword = newEspWifiPassword
+        );
+
+        this.$watch(
+          "$refs.espAccessPointRef.fullWidth",
+          (isFullWidth) => self.wifiModeVisible = !isFullWidth
+        );
+
+        this.$watch(
+          "$refs.espAccessPointRef.showEditWifiCredentials",
+          (showEditWifiCredentials) => self.setWifiCredentials = showEditWifiCredentials
+        );
+
+        this.$watch(
+          "$refs.espWifiRef.espWifiIP",
+          (newIP) => self.espWifiIP = newIP
+        );
       }
     }
   }
