@@ -11,7 +11,8 @@ export default {
     espWifiPassword: "",
     selectedEspMode: 0,
     connected: false,
-    connectInProgress: false
+    connectInProgress: false,
+    timeoutCount: 0
   },
 
   getters: {
@@ -88,6 +89,15 @@ export default {
     },
     setConnectInProgress(state, newState) {
       state.connectInProgress = newState;
+    },
+    increaseTimeoutCounter(state) {
+      if (state.connected) {
+        state.timeoutCount++;
+        if (state.timeoutCount > 10) {
+          state.connected = false;
+          console.log("disconnected");
+        }
+      }
     }
   },
 

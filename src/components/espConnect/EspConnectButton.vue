@@ -37,6 +37,7 @@
 
 <script>
   import EspConnectAlert from "@/components/espConnect/EspConnectAlert"
+  import commonMethods from "@/common/commonMethods"
   import commonEnums from "@/common/enums"
 
   export default {
@@ -92,15 +93,8 @@
         console.log(this.espWifiPassword)
 
         let self = this;
-        let didTimeOut = false;
-
-        new Promise((resolve, reject) => {
-          let timeout = setTimeout(function() {
-            didTimeOut = true;
-            reject(new Error('Request timed out'));
-          }, 5000);
-
-          fetch(
+        commonMethods.timeoutFetch(
+          new Request(
             self.requestPath + "wifiConnect",
             {
               method: "POST",
@@ -109,65 +103,41 @@
                 password: self.espWifiPassword
               })
             }
-          )
-          .then(response => {
-              clearTimeout(timeout);
-              if (!didTimeOut) {
-                resolve(response)
-              }
+          ),
+          15000,
+          function (status) {
+            if (status != null && status.connected) {
+              self.setEspConnected();
             }
-          )
-          .catch(error => console.log(error));
-        })
-        .then(response => response.json())
-        .then(status => {
-          if (status != null && status.connected) {
-            // self.setEspConnected();
-            self.setConnectInProgress(false);
-            console.log(status.toString())
+            else {
+              self.setConnectionError("Invalid response");
+            }
+          },
+          function (error) {
+            self.setConnectionError(error.toString());
           }
-          else {
-            self.setConnectionError("Invalid response");
-          }
-        })
-        .catch(error => {
-          self.setConnectionError(error.toString());
-        });
+        );
       },
       connect() {
         this.setConnectInProgress(true);
         this.hideAlert();
         let self = this;
-        let didTimeOut = false;
 
-        new Promise((resolve, reject) => {
-          let timeout = setTimeout(function() {
-            didTimeOut = true;
-            reject(new Error('Request timed out'));
-          }, 5000);
-
-          fetch(self.requestPath + "status")
-          .then(response => {
-              clearTimeout(timeout);
-              if (!didTimeOut) {
-                resolve(response)
-              }
+        commonMethods.timeoutFetch(
+          self.requestPath + "status",
+          5000,
+          function (status) {
+            if (status != null && status.connected) {
+              self.setEspConnected();
             }
-          )
-          .catch(error => console.log(error));
-        })
-        .then(response => response.json())
-        .then(status => {
-          if (status != null && status.connected) {
-            self.setEspConnected();
+            else {
+              self.setConnectionError("Invalid response");
+            }
+          },
+          function (error) {
+            self.setConnectionError(error.toString());
           }
-          else {
-            self.setConnectionError("Invalid response");
-          }
-        })
-        .catch(error => {
-          self.setConnectionError(error.toString());
-        });
+        );
       },
       setConnectInProgress(state) {
         this.$store.commit('espConnect/setConnectInProgress', state);
