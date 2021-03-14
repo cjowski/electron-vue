@@ -37,7 +37,7 @@
 
 <script>
   import EspConnectAlert from "@/components/espConnect/EspConnectAlert"
-  import commonMethods from "@/common/commonMethods"
+  import fetchMethods from "@/common/fetchMethods"
   import commonEnums from "@/common/enums"
 
   export default {
@@ -48,10 +48,11 @@
     },
 
     data: () => ({
-      alertStatus: commonEnums.alertStatuses.none,
+      alertStatus: commonEnums.alertStatus.none,
       alertMessage: "",
-      alertStatuses: commonEnums.alertStatuses,
-      espModes: commonEnums.espModes
+      alertStatusEnum: commonEnums.alertStatus,
+      espModeEnum: commonEnums.espMode,
+      wifiConnectionStatusEnum: commonEnums.wifiConnectionStatus
     }),
 
     props: {
@@ -93,7 +94,7 @@
         console.log(this.espWifiPassword)
 
         let self = this;
-        commonMethods.timeoutFetch(
+        fetchMethods.timeoutFetch(
           new Request(
             self.requestPath + "wifiConnect",
             {
@@ -106,15 +107,34 @@
           ),
           15000,
           function (status) {
-            if (status != null && status.connected) {
-              self.setEspConnected();
+            if (status != null) {
+              switch (status.wifiConnectionStatus) {
+                case self.wifiConnectionStatusEnum.connected: {
+                  self.setEspConnected();
+                  break;
+                }
+                case self.wifiConnectionStatusEnum.alreadyConnected: {
+                  self.setAlreadyConnectedToWifi();
+                  break;
+                }
+                case self.wifiConnectionStatusEnum.connectionFailed: {
+                  self.setConnectionError("Unable to connect to wifi");
+                  break;
+                }
+                default: {
+                  self.setConnectionError("Invalid response");
+                  break;
+                }
+              }
             }
             else {
               self.setConnectionError("Invalid response");
             }
+            self.setConnectInProgress(false);
           },
           function (error) {
             self.setConnectionError(error.toString());
+            self.setConnectInProgress(false);
           }
         );
       },
@@ -123,7 +143,7 @@
         this.hideAlert();
         let self = this;
 
-        commonMethods.timeoutFetch(
+        fetchMethods.timeoutFetch(
           self.requestPath + "status",
           5000,
           function (status) {
@@ -133,9 +153,11 @@
             else {
               self.setConnectionError("Invalid response");
             }
+            self.setConnectInProgress(false);
           },
           function (error) {
             self.setConnectionError(error.toString());
+            self.setConnectInProgress(false);
           }
         );
       },
@@ -146,21 +168,23 @@
         this.$store.commit('espConnect/setSelectedEspMode', this.selectedEspMode);
         this.$store.commit('espConnect/setEspIP', this.espIP);
         this.$store.commit('espConnect/setConnected', true);
-        this.alertStatus = this.alertStatuses.connected;
-        this.setConnectInProgress(false);
+        this.alertStatus = this.alertStatusEnum.connected;
+      },
+      setAlreadyConnectedToWifi() {
+        this.alertStatus = this.alertStatusEnum.info;
+        this.alertMessage = "Already connected to this wifi network";
       },
       setConnectionError(errorMessage) {
-        this.alertStatus = this.alertStatuses.connectionFailed;
+        this.alertStatus = this.alertStatusEnum.connectionFailed;
         this.alertMessage = errorMessage;
-        this.setConnectInProgress(false);
         console.log(this.alertMessage);
       },
       disconnect() {
         this.$store.commit('espConnect/setConnected', false);
-        this.alertStatus = this.alertStatuses.disconnected;
+        this.alertStatus = this.alertStatusEnum.disconnected;
       },
       hideAlert() {
-        this.alertStatus = this.alertStatuses.none;
+        this.alertStatus = this.alertStatusEnum.none;
         this.alertMessage = "";
       }
     }

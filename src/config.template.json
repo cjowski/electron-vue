@@ -2,6 +2,10 @@
   "espAccessPointIP": "",
   "espWifiIP": "",
   "espPort": "",
-  "espWifiSSID": "",
-  "espWifiPassword": ""
+  "espWifiCredentials": [
+    {
+      "ssid": "",
+      "password": ""
+    }
+  ]
 }

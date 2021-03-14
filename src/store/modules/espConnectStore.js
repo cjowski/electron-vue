@@ -9,6 +9,7 @@ export default {
     espPort: "",
     espWifiSSID: "",
     espWifiPassword: "",
+    possibleWifiCredentials: [],
     selectedEspMode: 0,
     connected: false,
     connectInProgress: false,
@@ -24,8 +25,8 @@ export default {
     },
     espIP: state => {
       switch (state.selectedEspMode) {
-        case commonEnums.espModes.accessPoint: return state.espAccessPointIP;
-        case commonEnums.espModes.wifi: return state.espWifiIP;
+        case commonEnums.espMode.accessPoint: return state.espAccessPointIP;
+        case commonEnums.espMode.wifi: return state.espWifiIP;
         default: throw Error("Invalid ESP mode: " + state.selectedEspMode);
       }
     },
@@ -38,6 +39,9 @@ export default {
     espWifiPassword: state => {
       return state.espWifiPassword;
     },
+    possibleWifiCredentials: state => {
+      return state.possibleWifiCredentials;
+    },
     espRequestPath: (state, getters) => {
       return "http://" + getters.espIP + ":" + state.espPort + "/";
     },
@@ -48,10 +52,10 @@ export default {
       return state.connected;
     },
     accessPointConnected: state => {
-      return state.connected && state.selectedEspMode == commonEnums.espModes.accessPoint;
+      return state.connected && state.selectedEspMode == commonEnums.espMode.accessPoint;
     },
     wifiConnected: state => {
-      return state.connected && state.selectedEspMode == commonEnums.espModes.wifi;
+      return state.connected && state.selectedEspMode == commonEnums.espMode.wifi;
     },
     connectInProgress: state => {
       return state.connectInProgress;
@@ -67,8 +71,8 @@ export default {
     },
     setEspIP(state, newEspIP) {
       switch (state.selectedEspMode) {
-        case commonEnums.espModes.accessPoint: return state.espAccessPointIP = newEspIP;
-        case commonEnums.espModes.wifi: return state.espWifiIP = newEspIP;
+        case commonEnums.espMode.accessPoint: return state.espAccessPointIP = newEspIP;
+        case commonEnums.espMode.wifi: return state.espWifiIP = newEspIP;
         default: throw Error("Invalid ESP mode: " + state.selectedEspMode);
       }
     },
@@ -84,11 +88,17 @@ export default {
     setEspWifiPassword(state, newEspWifiPassword) {
       state.espWifiPassword = newEspWifiPassword;
     },
+    setPossibleWifiCredentials(state, possibleWifiCredentials) {
+      state.possibleWifiCredentials = possibleWifiCredentials;
+    },
     setConnected(state, newState) {
       state.connected = newState;
     },
     setConnectInProgress(state, newState) {
       state.connectInProgress = newState;
+    },
+    resetTimeoutCounter(state) {
+      state.timeoutCount = 0;
     },
     increaseTimeoutCounter(state) {
       if (state.connected) {

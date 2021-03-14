@@ -4,21 +4,21 @@
       <esp-connect-spinner v-model="espConnectInProgress" />
       <v-row>
         <v-col
-          @click="selectedEspMode = espModes.accessPoint"
+          @click="selectedEspMode = espModeEnum.accessPoint"
           class="pr-1"
         >
           <esp-access-point
-            :selected="selectedEspMode == espModes.accessPoint"
+            :selected="selectedEspMode == espModeEnum.accessPoint"
             ref="espAccessPointRef"
           />
         </v-col>
         <v-col
           v-if="wifiModeVisible"
-          @click="selectedEspMode = espModes.wifi"
+          @click="selectedEspMode = espModeEnum.wifi"
           class="pl-1"
         >
           <esp-wifi
-            :selected="selectedEspMode == espModes.wifi"
+            :selected="selectedEspMode == espModeEnum.wifi"
             ref="espWifiRef"
           />
         </v-col>
@@ -61,7 +61,7 @@
       espWifiSSID: "",
       espWifiPassword: "",
       selectedEspMode: -1,
-      espModes: commonEnums.espModes,
+      espModeEnum: commonEnums.espMode,
       wifiModeVisible: true,
       setWifiCredentials: false,
       espAccessPointRef: null,
@@ -85,8 +85,8 @@
     computed: {
       espIP () {
         switch (this.selectedEspMode) {
-          case commonEnums.espModes.accessPoint: return this.espAccessPointIP;
-          case commonEnums.espModes.wifi: return this.espWifiIP;
+          case this.espModeEnum.accessPoint: return this.espAccessPointIP;
+          case this.espModeEnum.wifi: return this.espWifiIP;
           default: throw Error("Invalid ESP mode: " + this.selectedEspMode);
         }
       },

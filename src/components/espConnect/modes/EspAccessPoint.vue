@@ -35,8 +35,10 @@
             style="margin-top: -40px"
           >
             <v-row>
-              <v-text-field
+              <v-combobox
                 v-model="espWifiSSID"
+                :items="possibleWifiSSIDs"
+                hide-no-data
                 label="WIFI SSID"
                 outlined
                 hide-details
@@ -98,6 +100,21 @@
     computed: {
       connected() {
         return this.$store.getters['espConnect/accessPointConnected'];
+      },
+      possibleWifiCredentials() {
+        return this.$store.getters['espConnect/possibleWifiCredentials'];
+      },
+      possibleWifiSSIDs() {
+        return this.possibleWifiCredentials.map(x => x.ssid);
+      }
+    },
+
+    watch: {
+      espWifiSSID(newSSID) {
+        let ssidIndex = this.possibleWifiSSIDs.indexOf(newSSID);
+        if (ssidIndex != -1) {
+          this.espWifiPassword = this.possibleWifiCredentials[ssidIndex].password;
+        }
       }
     },
 

@@ -3,7 +3,7 @@
     <v-col class="ma-0 pa-0 pb-1 pt-1">
       <chart-value-box
         v-model="timeSettings"
-        :chartValue="timeInSeconds + ' (s)'"
+        :chartValue="time"
       />
     </v-col>
     <v-col
@@ -23,6 +23,7 @@
 
 <script>
   import ChartValueBox from "@/components/chart/ChartValueBox"
+  import commonMethods from "@/common/commonMethods"
 
   export default {
     name: 'FmChannelValuesBoxes',
@@ -53,11 +54,11 @@
         }
         return this.espFmChannelValuesJson.FmChannelValues[this.espFmChannelValuesJson.FmChannelValues.length - 1];
       },
-      timeInSeconds() {
+      time() {
         if (this.lastFmChannelValues == null) {
-          return -1;
+          return "0:00";
         }
-        return parseInt(this.lastFmChannelValues.Time / 1000);
+        return commonMethods.getTimeMSSFromMs(this.lastFmChannelValues.Time);
       },
       fmChannelValues() {
         if (this.lastFmChannelValues == null) {

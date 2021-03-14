@@ -1,7 +1,7 @@
 <template>
   <v-scale-transition>
     <v-alert
-      v-if="status == alertStatuses.connected"
+      v-if="status == alertStatusEnum.connected"
       dense
       type="success"
       border="left"
@@ -10,7 +10,7 @@
       Connected
     </v-alert>
     <v-alert
-      v-else-if="status == alertStatuses.disconnected"
+      v-else-if="status == alertStatusEnum.disconnected"
       dense
       type="warning"
       border="left"
@@ -19,13 +19,22 @@
       Disconnected
     </v-alert>
     <v-alert
-      v-else-if="status == alertStatuses.connectionFailed"
+      v-else-if="status == alertStatusEnum.connectionFailed"
       dense
       type="error"
       border="left"
       class="mt-3 mb-0"
     >
       {{ "Connection failed (" + message + ")"}}
+    </v-alert>
+    <v-alert
+      v-else-if="status == alertStatusEnum.info"
+      dense
+      type="info"
+      border="left"
+      class="mt-3 mb-0"
+    >
+      {{ message }}
     </v-alert>
   </v-scale-transition>
 </template>
@@ -37,7 +46,7 @@
     name: "EspConnectAlert",
 
     data: () => ({
-      alertStatuses: commonEnums.alertStatuses
+      alertStatusEnum: commonEnums.alertStatus
     }),
 
     props: {

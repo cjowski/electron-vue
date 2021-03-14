@@ -3,7 +3,7 @@
     <v-col class="ma-0 pa-1">
       <chart-value-box
         v-model="timeSettings"
-        :chartValue="timeInSeconds + ' (s)'"
+        :chartValue="time"
       />
     </v-col>
     <v-col class="ma-0 pa-1">
@@ -35,6 +35,7 @@
 
 <script>
   import ChartValueBox from "@/components/chart/ChartValueBox"
+  import commonMethods from "@/common/commonMethods"
 
   export default {
     name: 'GyroValuesBoxes',
@@ -73,11 +74,11 @@
         }
         return this.espGyroValuesJson.GyroValues[this.espGyroValuesJson.GyroValues.length - 1];
       },
-      timeInSeconds() {
+      time() {
         if (this.lastEspGyroValues == null) {
-          return -1;
+          return "0:00";
         }
-        return parseInt(this.lastEspGyroValues.Time / 1000);
+        return commonMethods.getTimeMSSFromMs(this.lastEspGyroValues.Time);
       },
       pitch() {
         if (this.lastEspGyroValues == null) {

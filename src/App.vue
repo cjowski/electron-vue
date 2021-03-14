@@ -11,15 +11,16 @@
 
 <script>
   import configJson from "@/config.json"
-  import commonMethods from "@/common/commonMethods"
+  import { FmDataGetter } from "@/espDataGet/FmDataGetter"
+  import { GyroDataGetter } from "@/espDataGet/GyroDataGetter"
   import Toolbar from "@/components/Toolbar"
 
   export default {
     name: "App",
 
     data: () => ({
-      fetchFmInterval: null,
-      fetchGyroInterval: null
+      fmDataGetter: null,
+      gyroDataGetter: null
     }),
 
     components: {
@@ -30,8 +31,12 @@
       this.$store.commit('espConnect/setEspAccessPointIP', configJson.espAccessPointIP);
       this.$store.commit('espConnect/setEspWifiIP', configJson.espWifiIP);
       this.$store.commit('espConnect/setEspPort', configJson.espPort);
-      this.$store.commit('espConnect/setEspWifiSSID', configJson.espWifiSSID);
-      this.$store.commit('espConnect/setEspWifiPassword', configJson.espWifiPassword);
+      this.$store.commit('espConnect/setEspWifiSSID', configJson.espWifiCredentials[0].ssid);
+      this.$store.commit('espConnect/setEspWifiPassword', configJson.espWifiCredentials[0].password);
+      this.$store.commit('espConnect/setPossibleWifiCredentials', configJson.espWifiCredentials);
+
+      this.gyroDataGetter = new GyroDataGetter(this.$store, this.espRequestPath);
+      this.fmDataGetter = new FmDataGetter(this.$store, this.espRequestPath);
     },
 
     computed: {
@@ -51,45 +56,24 @@
         else {
           this.stopFetchingEspData();
         }
+      },
+      espRequestPath(newEspRequestPath) {
+        this.updateGettersRequestPath(newEspRequestPath);
       }
     },
 
     methods: {
       startFetchingEspData() {
-        this.fetchFmData();
-        this.fetchGyroData();
+        this.fmDataGetter.startFetching();
+        this.gyroDataGetter.startFetching();
       },
       stopFetchingEspData() {
-        clearInterval(this.fetchFmInterval);
-        clearInterval(this.fetchGyroInterval);
+        this.fmDataGetter.stopFetching();
+        this.gyroDataGetter.stopFetching();
       },
-      fetchFmData() {
-        let self = this;
-        commonMethods.setFetchDataInterval(
-          self.espRequestPath + "fm",
-          function (fmJson) {
-            if (fmJson != null) {
-              self.$store.commit('fm/setEspFmChannelValuesJson', fmJson);
-              self.$store.commit('fm/addFmChannelValues', fmJson);
-            }
-          },
-          self.$store,
-          50
-        );
-      },
-      fetchGyroData() {
-        let self = this;
-        commonMethods.setFetchDataInterval(
-          self.espRequestPath + "gyro",
-          function (gyroJson) {
-            if (gyroJson != null) {
-              self.$store.commit('gyro/setEspGyroValuesJson', gyroJson);
-              self.$store.commit('gyro/addGyroValues', gyroJson);
-            }
-          },
-          self.$store,
-          50
-        );
+      updateGettersRequestPath(newEspRequestPath) {
+        this.fmDataGetter.updateRequestPath(newEspRequestPath);
+        this.gyroDataGetter.updateRequestPath(newEspRequestPath);
       }
     }
   };
