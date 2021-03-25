@@ -18,7 +18,7 @@ export class GyroDataGetter {
     this.fetchInterval = fetchMethods.setFetchDataInterval(
       this.requestPath + "gyro",
       function (gyroJson) {
-        if (gyroJson != null) {
+        if (gyroJson != null && gyroJson.GyroValues && gyroJson.GyroValues.length > 0) {
           self.store.commit('gyro/setEspGyroValuesJson', gyroJson);
           self.store.commit('gyro/addGyroValues', gyroJson);
         }

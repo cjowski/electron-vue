@@ -34,21 +34,24 @@
           />
         </v-col>
       </v-row>
+      <esp-section-side-bar />
     </v-container>
   </v-card>
 </template>
 
 <script>
-  import EspAccessPoint from "@/components/espConnect/modes/EspAccessPoint"
-  import EspWifi from "@/components/espConnect/modes/EspWifi"
-  import EspConnectButton from "@/components/espConnect/EspConnectButton"
-  import EspConnectSpinner from "@/components/espConnect/EspConnectSpinner"
+  import EspSectionSideBar from "@/components/espSection/EspSectionSideBar"
+  import EspAccessPoint from "@/components/espSection/espConnect/modes/EspAccessPoint"
+  import EspWifi from "@/components/espSection/espConnect/modes/EspWifi"
+  import EspConnectButton from "@/components/espSection/espConnect/EspConnectButton"
+  import EspConnectSpinner from "@/components/espSection/espConnect/EspConnectSpinner"
   import commonEnums from "@/common/enums"
 
   export default {
     name: 'EspConnectSection',
 
     components: {
+      EspSectionSideBar,
       EspAccessPoint,
       EspWifi,
       EspConnectButton,

@@ -18,7 +18,7 @@ export class FmDataGetter {
     this.fetchInterval = fetchMethods.setFetchDataInterval(
       this.requestPath + "fm",
       function (fmJson) {
-        if (fmJson != null) {
+        if (fmJson != null && fmJson.FmChannelValues && fmJson.FmChannelValues.length > 0) {
           self.store.commit('fm/setEspFmChannelValuesJson', fmJson);
           self.store.commit('fm/addFmChannelValues', fmJson);
         }

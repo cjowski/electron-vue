@@ -36,7 +36,7 @@
 </template>
 
 <script>
-  import EspConnectAlert from "@/components/espConnect/EspConnectAlert"
+  import EspConnectAlert from "@/components/espSection/espConnect/EspConnectAlert"
   import fetchMethods from "@/common/fetchMethods"
   import commonEnums from "@/common/enums"
 
@@ -87,11 +87,32 @@
     },
 
     methods: {
+      connect() {
+        this.setConnectInProgress(true);
+        this.hideAlert();
+        let self = this;
+
+        fetchMethods.timeoutFetch(
+          self.requestPath + "status",
+          5000,
+          function (status) {
+            if (status != null && status.Connected) {
+              self.setEspConnected();
+            }
+            else {
+              self.setConnectionError("Invalid response");
+            }
+            self.setConnectInProgress(false);
+          },
+          function (error) {
+            self.setConnectionError(error.toString());
+            self.setConnectInProgress(false);
+          }
+        );
+      },
       connectAccessPointToWifi() {
         this.setConnectInProgress(true);
         this.hideAlert();
-        console.log(this.espWifiSSID)
-        console.log(this.espWifiPassword)
 
         let self = this;
         fetchMethods.timeoutFetch(
@@ -100,15 +121,15 @@
             {
               method: "POST",
               body: JSON.stringify({
-                ssid: self.espWifiSSID,
-                password: self.espWifiPassword
+                SSID: self.espWifiSSID,
+                Password: self.espWifiPassword
               })
             }
           ),
           15000,
           function (status) {
             if (status != null) {
-              switch (status.wifiConnectionStatus) {
+              switch (status.Status) {
                 case self.wifiConnectionStatusEnum.connected: {
                   self.setEspConnected();
                   break;
@@ -126,29 +147,6 @@
                   break;
                 }
               }
-            }
-            else {
-              self.setConnectionError("Invalid response");
-            }
-            self.setConnectInProgress(false);
-          },
-          function (error) {
-            self.setConnectionError(error.toString());
-            self.setConnectInProgress(false);
-          }
-        );
-      },
-      connect() {
-        this.setConnectInProgress(true);
-        this.hideAlert();
-        let self = this;
-
-        fetchMethods.timeoutFetch(
-          self.requestPath + "status",
-          5000,
-          function (status) {
-            if (status != null && status.connected) {
-              self.setEspConnected();
             }
             else {
               self.setConnectionError("Invalid response");

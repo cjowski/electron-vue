@@ -36,7 +36,7 @@
 </template>
 
 <script>
-  import EspModeTools from "@/components/espConnect/EspModeTools"
+  import EspModeTools from "@/components/espSection/espConnect/EspModeTools"
 
   export default {
     name: "EspWifi",

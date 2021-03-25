@@ -30,7 +30,7 @@
 </template>
 
 <script>
-  import EspConnectedIcon from "@/components/espConnect/EspConnectedIcon"
+  import EspConnectedIcon from "@/components/espSection/espConnect/EspConnectedIcon"
 
   export default {
     name: "EspModeTools",
