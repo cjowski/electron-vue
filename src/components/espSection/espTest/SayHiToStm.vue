@@ -30,6 +30,7 @@
 <script>
   import fetchMethods from "@/common/fetchMethods"
   import EspTestSpinner from "@/components/espSection/espTest/EspTestSpinner"
+  import { SayHiToStmResponseGetter } from "@/espDataGet/SayHiToStmResponseGetter"
   
   export default {
     name: "SayHiToStm",
@@ -37,11 +38,21 @@
     data: () => ({
       responseLabel: "",
       responseMessage: "",
-      isRequesting: false
+      isRequesting: false,
+      sayHiToStmResponseGetter: null
     }),
 
     components: {
       EspTestSpinner
+    },
+
+    mounted() {
+      this.sayHiToStmResponseGetter = new SayHiToStmResponseGetter(
+        this.$store,
+        50,
+        this.setStmGreeting,
+        this.setError
+      );
     },
 
     computed: {
@@ -60,10 +71,19 @@
           self.espRequestPath + "sayHiToStm",
           5000,
           function (response) {
-            if (response != null && response.State) {
-              self.responseMessage = response.State;
+            if (response != null && response.TaskID && response.TaskID > 0) {
+              self.responseLabel = "Task " + response.TaskID;
+              self.responseMessage = "waiting...";
+              self.sayHiToStmResponseGetter.startFetching(
+                self.espRequestPath + "sayHiToStmStatus?TaskID=" + response.TaskID
+              );
             }
-            self.isRequesting = false;
+            else
+            {
+              self.responseLabel = "ERROR";
+              self.isRequesting = false;
+              self.responseMessage = "Invalid response"
+            }
           },
           function (error) {
             self.responseLabel = "ERROR";
@@ -72,6 +92,15 @@
             self.isRequesting = false;
           }
         );
+      },
+      setStmGreeting(stmGreeting) {
+        this.responseMessage = stmGreeting;
+        this.isRequesting = false;
+      },
+      setError(error) {
+        this.responseLabel = "ERROR";
+        this.responseMessage = error;
+        this.isRequesting = false;
       }
     }
   }
