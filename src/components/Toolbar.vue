@@ -14,6 +14,9 @@
       <v-btn text :x-large="isLargeDevice" width=150 router to="/gyro">
         GYRO
       </v-btn>
+      <v-btn text :x-large="isLargeDevice" width=150 router to="/motor">
+        MOTOR
+      </v-btn>
     </v-toolbar-items>
   </v-app-bar>
 </template>

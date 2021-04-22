@@ -1,9 +1,10 @@
 import Vue from "vue"
 import VueRouter from "vue-router"
-import FmSection from "@/views/FmSection";
-import GyroSection from "@/views/GyroSection"
 import EspConnectSection from "@/views/EspSection/EspConnectSection"
 import EspTestSection from "@/views/EspSection/EspTestSection"
+import FmSection from "@/views/FmSection";
+import GyroSection from "@/views/GyroSection"
+import MotorSection from "@/views/MotorSection"
 
 Vue.use(VueRouter)
 
@@ -27,6 +28,11 @@ const routes = [
     path: "/gyro",
     name: "gyro",
     component: GyroSection
+  },
+  {
+    path: "/motor",
+    name: "motor",
+    component: MotorSection
   }
 ]
 

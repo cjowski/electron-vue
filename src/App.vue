@@ -13,6 +13,7 @@
   import configJson from "@/config.json"
   import { FmDataGetter } from "@/espDataGet/FmDataGetter"
   import { GyroDataGetter } from "@/espDataGet/GyroDataGetter"
+  import { MotorDataGetter } from "@/espDataGet/MotorDataGetter"
   import Toolbar from "@/components/Toolbar"
 
   export default {
@@ -20,7 +21,8 @@
 
     data: () => ({
       fmDataGetter: null,
-      gyroDataGetter: null
+      gyroDataGetter: null,
+      motorDataGetter: null
     }),
 
     components: {
@@ -37,6 +39,7 @@
 
       this.gyroDataGetter = new GyroDataGetter(this.$store, this.espRequestPath);
       this.fmDataGetter = new FmDataGetter(this.$store, this.espRequestPath);
+      this.motorDataGetter = new MotorDataGetter(this.$store, this.espRequestPath);
     },
 
     computed: {
@@ -66,14 +69,17 @@
       startFetchingEspData() {
         this.fmDataGetter.startFetching();
         this.gyroDataGetter.startFetching();
+        this.motorDataGetter.startFetching();
       },
       stopFetchingEspData() {
         this.fmDataGetter.stopFetching();
         this.gyroDataGetter.stopFetching();
+        this.motorDataGetter.stopFetching();
       },
       updateGettersRequestPath(newEspRequestPath) {
         this.fmDataGetter.updateRequestPath(newEspRequestPath);
         this.gyroDataGetter.updateRequestPath(newEspRequestPath);
+        this.motorDataGetter.updateRequestPath(newEspRequestPath);
       }
     }
   };
