@@ -2,6 +2,7 @@ import Vue from "vue"
 import VueRouter from "vue-router"
 import EspConnectSection from "@/views/EspSection/EspConnectSection"
 import EspTestSection from "@/views/EspSection/EspTestSection"
+import DashboardSection from "@/views/DashboardSection"
 import FmSection from "@/views/FmSection";
 import GyroSection from "@/views/GyroSection"
 import MotorSection from "@/views/MotorSection"
@@ -18,6 +19,11 @@ const routes = [
     path: "/espTest",
     name: "espTest",
     component: EspTestSection
+  },
+  {
+    path: "/dashboard",
+    name: "dashboard",
+    component: DashboardSection
   },
   {
     path: "/fm",

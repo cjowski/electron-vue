@@ -5,16 +5,19 @@
     :height="isLargeDevice ? '64' : '32'"   
   >
     <v-toolbar-items>
-      <v-btn text :x-large="isLargeDevice" width=150 router to="/">
+      <v-btn text :x-large="isLargeDevice" width=100 router to="/dashboard">
+        BOARD
+      </v-btn>
+      <v-btn text :x-large="isLargeDevice" width=100 router to="/">
         ESP
       </v-btn>
-      <v-btn text :x-large="isLargeDevice" width=150 router to="/fm">
+      <v-btn text :x-large="isLargeDevice" width=100 router to="/fm">
         FM
       </v-btn>
-      <v-btn text :x-large="isLargeDevice" width=150 router to="/gyro">
+      <v-btn text :x-large="isLargeDevice" width=100 router to="/gyro">
         GYRO
       </v-btn>
-      <v-btn text :x-large="isLargeDevice" width=150 router to="/motor">
+      <v-btn text :x-large="isLargeDevice" width=100 router to="/motor">
         MOTOR
       </v-btn>
     </v-toolbar-items>
