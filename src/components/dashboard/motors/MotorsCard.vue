@@ -32,24 +32,11 @@
 
     data: () => ({
       minSpeed: 1000,
-      maxSpeed: 2000,
-      motorSpeedPercentages: [0, 0, 0, 0],
-      updateInterval: null
+      maxSpeed: 2000
     }),
 
     components: {
       MotorCircle
-    },
-
-    created() {
-      this.updateInterval = setInterval(
-        this.updateMotorSpeedPercentages,
-        5
-      );
-    },
-
-    destroyed() {
-      clearInterval(this.updateInterval);
     },
 
     computed: {
@@ -61,11 +48,8 @@
           return null;
         }
         return this.espMotorsJson.Motors[this.espMotorsJson.Motors.length - 1];
-      }
-    },
-
-    methods: {
-      updateMotorSpeedPercentages() {
+      },
+      motorSpeedPercentages() {
         if (this.lastMotors == null) {
           return [0, 0, 0, 0];
         }
@@ -77,7 +61,7 @@
           );
           values.push(speedPercentage);
         });
-        self.motorSpeedPercentages = values;
+        return values;
       }
     }
   }
