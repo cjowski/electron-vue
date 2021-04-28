@@ -32,10 +32,6 @@
       EspCard,
       FmCard,
       MotorsCard
-    },
-
-    computed: {
-      
     }
   }
 </script>

@@ -1,16 +1,38 @@
 <template>
-  <doughnut-chart
-    :style="sizeStyle"
-    :chart-data="chartData"
-    :options="chartOptions"
-  />
+  <div>
+    <div
+      :style="sizeStyle"
+      class="motor-chart-circle-inner-text"
+    >
+      <div style="height: 100%">
+        {{motorSpeedPercentage}}%
+      </div>
+    </div>
+    <div
+      :style="sizeStyle + 'position: absolute;'"
+    >
+      <v-btn
+        icon absolute right bottom fab
+        @click="motorSettings.show = !motorSettings.show"
+        :style="{transform:'translate(60%, 10%)'}"
+      > 
+        <v-icon v-if="motorSettings.show">mdi-eye</v-icon>
+        <v-icon v-else>mdi-eye-off</v-icon>
+      </v-btn>
+    </div>
+    <doughnut-chart
+      :style="sizeStyle"
+      :chart-data="chartData"
+      :options="chartOptions"
+    />
+  </div>
 </template>
 
 <script>
   import DoughnutChart from "@/components/chart/DoughnutChart"
 
   export default {
-    name: 'MotorCircle',
+    name: 'MotorChartCircle',
 
     data: () => ({
       chartData: {
@@ -33,7 +55,8 @@
       },
       backgroundColor: "#424242",
       borderColor: "#1E1E1E",
-      borderWidth: 2
+      borderWidth: 2,
+      turnOffColor: "#37474F"
     }),
 
     props: {
@@ -48,6 +71,9 @@
       motorMaxSpeed: {
         type: Number,
         default: 2000
+      },
+      motorSettings: {
+        type: Object
       }
     },
 
@@ -65,23 +91,13 @@
           (this.motorSpeed - this.motorMinSpeed) / (this.motorMaxSpeed - this.motorMinSpeed) * 100
         );
       },
-      circleColor() {
-        let red = Math.round(
-          (255 * this.motorSpeedPercentage) / 100
-        );
-        let green = Math.round(
-          (255 * (100 - this.motorSpeedPercentage)) / 100 
-        );
-        let blue = 0
-        return "rgb(" + red + "," + green + "," + blue + ")";
-      },
       circleSize() {
         switch (this.$vuetify.breakpoint.name) {
-          case 'xs': return 58;
-          case 'sm': return 58;
-          case 'md': return 79;
-          case 'lg': return 79;
-          case 'xl': return 79;
+          case 'xs': return 60;
+          case 'sm': return 80;
+          case 'md': return 120;
+          case 'lg': return 120;
+          case 'xl': return 150;
           default : throw Error("Invalid $vuetify.breakpoint.name: " + this.$vuetify.breakpoint.name);
         }
       },
@@ -106,7 +122,7 @@
               100 - this.motorSpeedPercentage
             ],
             backgroundColor: [
-              this.circleColor,
+              this.motorSettings.show ? this.motorSettings.color : this.turnOffColor,
               this.backgroundColor
             ],
             borderColor: [
@@ -123,3 +139,12 @@
     }
   }
 </script>
+
+<style>
+  .motor-chart-circle-inner-text
+  {
+    position: absolute;
+    transform: translate(0%, 41%);
+    user-select: none;
+  }
+</style>

@@ -4,20 +4,20 @@
       <v-row align="center" justify="center">
         MOTORS
       </v-row>
-      <v-row class="ma-0 pa-0 pt-4">
-        <v-col align="center" justify="center" class="ma-0 pa-0">
-          <motor-circle :motorSpeedPercentage="motorSpeedPercentages[0]" />
-        </v-col>
-        <v-col align="center" justify="center" class="ma-0 pa-0">
-          <motor-circle :motorSpeedPercentage="motorSpeedPercentages[1]" />
-        </v-col>
-      </v-row>
       <v-row class="ma-0 pa-0 pt-2">
         <v-col align="center" justify="center" class="ma-0 pa-0">
-          <motor-circle :motorSpeedPercentage="motorSpeedPercentages[2]" />
+          <motor-circle :motorSpeed="motorSpeeds[0]" />
         </v-col>
         <v-col align="center" justify="center" class="ma-0 pa-0">
-          <motor-circle :motorSpeedPercentage="motorSpeedPercentages[3]" />
+          <motor-circle :motorSpeed="motorSpeeds[1]" />
+        </v-col>
+      </v-row>
+      <v-row class="ma-0 pa-0">
+        <v-col align="center" justify="center" class="ma-0 pa-0">
+          <motor-circle :motorSpeed="motorSpeeds[2]" />
+        </v-col>
+        <v-col align="center" justify="center" class="ma-0 pa-0">
+          <motor-circle :motorSpeed="motorSpeeds[3]" />
         </v-col>
       </v-row>
     </v-container>
@@ -31,8 +31,8 @@
     name: 'MotorsCard',
 
     data: () => ({
-      minSpeed: 1000,
-      maxSpeed: 2000
+      motorMinSpeed: 1000,
+      motorMaxSpeed: 2000
     }),
 
     components: {
@@ -43,26 +43,27 @@
       espMotorsJson() {
         return this.$store.getters['motor/espMotorsJson'];
       },
-      lastMotors() {
+      lastMotorsData() {
         if (this.espMotorsJson == null) {
           return null;
         }
         return this.espMotorsJson.Motors[this.espMotorsJson.Motors.length - 1];
       },
-      motorSpeedPercentages() {
-        if (this.lastMotors == null) {
-          return [0, 0, 0, 0];
+      motorSpeeds() {
+        if (this.lastMotorsData == null) {
+          return [
+            this.motorMinSpeed,
+            this.motorMinSpeed,
+            this.motorMinSpeed,
+            this.motorMinSpeed
+          ];
         }
-        let values = [];
-        let self = this;
-        this.lastMotors.MotorSpeed.forEach(function(motorSpeed) {
-          var speedPercentage = Math.round(
-            (motorSpeed - self.minSpeed) / (self.maxSpeed - self.minSpeed) * 100
-          );
-          values.push(speedPercentage);
+        var values = [];
+        this.lastMotorsData.MotorSpeed.forEach(function(motorSpeed) {
+          values.push(motorSpeed);
         });
         return values;
-      }
+      },
     }
   }
 </script>

@@ -26,12 +26,6 @@
 
 <script>
 export default {
-  data () {
-    return {
-      
-    }
-  },
-  
   computed: {
     isLargeDevice () {
       switch (this.$vuetify.breakpoint.name) {

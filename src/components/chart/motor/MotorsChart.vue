@@ -1,20 +1,61 @@
 <template>
   <v-container>
-    <line-chart
-      :style="'height: ' + chartHeight + 'px; width: calc(100% - 40px);'"
-      :chart-data="chartData"
-      :options="chartOptions"
-    />
-    <motors-boxes
-      :timeSettings="timeSettings"
-      :motorSettings="motorSettings"
-    />
+    <v-row>
+      <v-col cols=2 align="center" class="pt-8">
+        <v-row justify="center" align="start" style="height: 50%">
+          <motor-chart-circle
+            :motorSettings="motorSettings[0]"
+            :motorSpeed="motorSpeeds[0]"
+          />
+        </v-row>
+        <v-row justify="center" align="end" style="height: 45%">
+          <motor-chart-circle
+            :motorSettings="motorSettings[1]"
+            :motorSpeed="motorSpeeds[1]"
+          />
+        </v-row>
+      </v-col>
+      <v-col cols=8 class="pl-0 pr-2">
+        <v-row class="ma-0 pa-0">
+          <line-chart
+            :style="'height: ' + chartHeight + 'px; width: 100%;'"
+            :chart-data="chartData"
+            :options="chartOptions"
+          />
+        </v-row>
+        <v-row justify="center" class="ma-0 pa-0 pt-1">
+          <v-card
+            outlined
+            shaped
+            width="25%"
+            :style="'border: 2px solid ' + timeSettings.color"
+            class="motors-chart-time-box"
+          >
+            {{time}}
+          </v-card>
+        </v-row>
+      </v-col>
+      <v-col cols=2 align="center" class="pt-8">
+        <v-row justify="center" align="start" style="height: 50%">
+          <motor-chart-circle
+            :motorSettings="motorSettings[2]"
+            :motorSpeed="motorSpeeds[2]"
+          />
+        </v-row>
+        <v-row justify="center" align="end" style="height: 45%">
+          <motor-chart-circle
+            :motorSettings="motorSettings[3]"
+            :motorSpeed="motorSpeeds[3]"
+          />
+        </v-row>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
 <script>
   import LineChart from "@/components/chart/LineChart"
-  import MotorsBoxes from "@/components/chart/motor/MotorsBoxes"
+  import MotorChartCircle from "@/components/chart/motor/MotorChartCircle"
   import commonMethods from "@/common/commonMethods"
 
   export default {
@@ -22,7 +63,7 @@
 
     components: {
       LineChart,
-      MotorsBoxes
+      MotorChartCircle
     },
 
     data: () => ({
@@ -49,6 +90,8 @@
           color: "#0067e6"
         }
       ],
+      motorMinSpeed: 1000,
+      motorMaxSpeed: 2000,
       chartOptions: {
         responsive: true,
         maintainAspectRatio: false,
@@ -97,6 +140,33 @@
     computed: {
       espMotorsJson() {
         return this.$store.getters['motor/espMotorsJson'];
+      },
+      lastMotorsData() {
+        if (this.espMotorsJson == null) {
+          return null;
+        }
+        return this.espMotorsJson.Motors[this.espMotorsJson.Motors.length - 1];
+      },
+      time() {
+        if (this.lastMotorsData == null) {
+          return "0:00";
+        }
+        return commonMethods.getTimeMSSFromMs(this.lastMotorsData.Time);
+      },
+      motorSpeeds() {
+        if (this.lastMotorsData == null) {
+          return [
+            this.motorMinSpeed,
+            this.motorMinSpeed,
+            this.motorMinSpeed,
+            this.motorMinSpeed
+          ];
+        }
+        var values = [];
+        this.lastMotorsData.MotorSpeed.forEach(function(motorSpeed) {
+          values.push(motorSpeed);
+        });
+        return values;
       },
       motorsChartData() {
         return this.$store.getters['motor/motorsChartData'];
@@ -168,3 +238,11 @@
     }
   }
 </script>
+
+<style>
+  .motors-chart-time-box
+  {
+    text-align: center;
+    user-select: none;
+  }
+</style>
