@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      :style="sizeStyle"
+      :style="sizeStyle + innerTextTranslateStyle"
       class="motor-chart-circle-inner-text"
     >
       <div style="height: 100%">
@@ -13,7 +13,7 @@
     >
       <v-btn
         icon absolute right bottom fab
-        @click="motorSettings.show = !motorSettings.show"
+        @click="updateShow()"
         :style="{transform:'translate(60%, 10%)'}"
       > 
         <v-icon v-if="motorSettings.show">mdi-eye</v-icon>
@@ -104,6 +104,21 @@
       sizeStyle() {
         return "height: " + this.circleSize + "px;"
           + "width: " + this.circleSize + "px;";
+      },
+      innerTextTranslateYPortion() {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'xs': return 41;
+          case 'sm': return 41;
+          case 'md': return 44;
+          case 'lg': return 44;
+          case 'xl': return 44;
+          default : throw Error("Invalid $vuetify.breakpoint.name: " + this.$vuetify.breakpoint.name);
+        }
+      },
+      innerTextTranslateStyle() {
+        return "transform: translate("
+          + "0%, "
+          + this.innerTextTranslateYPortion + "%)";
       }
     },
 
@@ -114,6 +129,10 @@
     },
 
     methods: {
+      updateShow() {
+        this.motorSettings.show = !this.motorSettings.show;
+        this.updateChartData();
+      },
       updateChartData() {
         this.chartData = {
           datasets: [{
@@ -144,7 +163,6 @@
   .motor-chart-circle-inner-text
   {
     position: absolute;
-    transform: translate(0%, 41%);
     user-select: none;
   }
 </style>

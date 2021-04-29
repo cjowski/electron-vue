@@ -27,7 +27,7 @@
           <v-card
             outlined
             shaped
-            width="25%"
+            width="35%"
             :style="'border: 2px solid ' + timeSettings.color"
             class="motors-chart-time-box"
           >

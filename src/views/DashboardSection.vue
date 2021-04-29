@@ -14,6 +14,9 @@
         </v-row>
       </v-col>
       <v-col cols=3 class="pt-4 pl-2">
+        <gyro-card />
+      </v-col>
+      <v-col cols=3 class="pt-4 pl-0">
         <motors-card />
       </v-col>
     </v-row>
@@ -23,6 +26,7 @@
 <script>
   import EspCard from "@/components/dashboard/EspCard"
   import FmCard from "@/components/dashboard/FmCard"
+  import GyroCard from "@/components/dashboard/gyro/GyroCard"
   import MotorsCard from "@/components/dashboard/motors/MotorsCard"
 
   export default {
@@ -31,6 +35,7 @@
     components: {
       EspCard,
       FmCard,
+      GyroCard,
       MotorsCard
     }
   }
