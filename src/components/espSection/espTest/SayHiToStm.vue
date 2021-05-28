@@ -30,7 +30,7 @@
 <script>
   import fetchMethods from "@/common/fetchMethods"
   import EspTestSpinner from "@/components/espSection/espTest/EspTestSpinner"
-  import { SayHiToStmResponseGetter } from "@/espDataGet/SayHiToStmResponseGetter"
+  import { SayHiToStmResponseGetter } from "@/espDataGet/httpRequest/SayHiToStmResponseGetter"
   
   export default {
     name: "SayHiToStm",

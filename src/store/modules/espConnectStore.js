@@ -45,6 +45,9 @@ export default {
     espRequestPath: (state, getters) => {
       return "http://" + getters.espIP + ":" + state.espPort + "/";
     },
+    espWebSocketPath: (state, getters) => {
+      return "ws://" + getters.espIP + "/esp32ws";
+    },
     selectedEspMode: state => {
       return state.selectedEspMode;
     },

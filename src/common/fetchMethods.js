@@ -12,24 +12,24 @@ export default {
       }, timeoutMs);
 
       fetch(request)
-      .then(response => {
-          clearTimeout(timeout);
-          if (!didTimeOut) {
-            resolve(response)
+        .then(response => {
+            clearTimeout(timeout);
+            if (!didTimeOut) {
+              resolve(response)
+            }
           }
+        )
+        .catch(error => onError(error));
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw Error(response.statusText);
         }
-      )
+        return response;
+      })
+      .then(response => response.json())
+      .then(responseJson => onSuccess(responseJson))
       .catch(error => onError(error));
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw Error(response.statusText);
-      }
-      return response;
-    })
-    .then(response => response.json())
-    .then(responseJson => onSuccess(responseJson))
-    .catch(error => onError(error));
   },
   setFetchDataInterval(request, onSuccess, store, intervalMs) {
     let self = this;

@@ -11,18 +11,14 @@
 
 <script>
   import configJson from "@/config.json"
-  import { FmDataGetter } from "@/espDataGet/FmDataGetter"
-  import { GyroDataGetter } from "@/espDataGet/GyroDataGetter"
-  import { MotorDataGetter } from "@/espDataGet/MotorDataGetter"
+  import { EspWebSocketDataGetter } from "@/espDataGet/webSocket/EspWebSocketDataGetter"
   import Toolbar from "@/components/Toolbar"
 
   export default {
     name: "App",
 
     data: () => ({
-      fmDataGetter: null,
-      gyroDataGetter: null,
-      motorDataGetter: null
+      espWebSocketDataGetter: null
     }),
 
     components: {
@@ -37,49 +33,29 @@
       this.$store.commit('espConnect/setEspWifiPassword', configJson.espWifiCredentials[0].password);
       this.$store.commit('espConnect/setPossibleWifiCredentials', configJson.espWifiCredentials);
 
-      this.gyroDataGetter = new GyroDataGetter(this.$store, this.espRequestPath);
-      this.fmDataGetter = new FmDataGetter(this.$store, this.espRequestPath);
-      this.motorDataGetter = new MotorDataGetter(this.$store, this.espRequestPath);
+      this.espWebSocketDataGetter = new EspWebSocketDataGetter(this.$store, this.espWebSocketPath);
     },
 
     computed: {
       espConnected() {
         return this.$store.getters['espConnect/connected'];
       },
-      espRequestPath() {
-        return this.$store.getters['espConnect/espRequestPath'];
+      espWebSocketPath() {
+        return this.$store.getters['espConnect/espWebSocketPath'];
       }
     },
 
     watch: {
       espConnected(connected) {
         if (connected) {
-          this.startFetchingEspData();
+          this.espWebSocketDataGetter.initializeWebSocket();
         }
         else {
-          this.stopFetchingEspData();
+          this.espWebSocketDataGetter.closeWebSocket();
         }
       },
-      espRequestPath(newEspRequestPath) {
-        this.updateGettersRequestPath(newEspRequestPath);
-      }
-    },
-
-    methods: {
-      startFetchingEspData() {
-        this.fmDataGetter.startFetching();
-        this.gyroDataGetter.startFetching();
-        this.motorDataGetter.startFetching();
-      },
-      stopFetchingEspData() {
-        this.fmDataGetter.stopFetching();
-        this.gyroDataGetter.stopFetching();
-        this.motorDataGetter.stopFetching();
-      },
-      updateGettersRequestPath(newEspRequestPath) {
-        this.fmDataGetter.updateRequestPath(newEspRequestPath);
-        this.gyroDataGetter.updateRequestPath(newEspRequestPath);
-        this.motorDataGetter.updateRequestPath(newEspRequestPath);
+      espWebSocketPath(newEspWebSocketPath) {
+        this.espWebSocketDataGetter.updateWebSocketPath(newEspWebSocketPath)
       }
     }
   };
