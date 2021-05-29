@@ -4,6 +4,11 @@
       :axisY="chartOptions.scales.yAxes[0]"
       :roundDecimals=2
     />
+    <chart-scrollers
+      :axisY="chartOptions.scales.yAxes[0]"
+      :roundDecimals=2
+      :leftSide="false"
+    />
     <line-chart
       :style="'height: ' + chartHeight + 'px; width: calc(100% - 40px);'"
       :chart-data="chartData"

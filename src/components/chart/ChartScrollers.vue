@@ -5,7 +5,8 @@
       icon
       x-large
       ripple
-      :style="{'z-index': 10, transform:'translateX(35%)'}"
+      :right="!leftSide"
+      :style="{'z-index': 10, transform: topScrollerTransition}"
       @click="scrollUp()"
       @mousedown="scrollUpStart()"
       @mouseup="scrollUpStop()"
@@ -18,7 +19,8 @@
       x-large
       ripple
       bottom
-      :style="{'z-index': 10, transform:'translate(35%, -70%)'}"
+      :right="!leftSide"
+      :style="{'z-index': 10, transform: bottomScrollerTransition}"
       @click="scrollDown()"
       @mousedown="scrollDownStart()"
       @mouseup="scrollDownStop()"
@@ -44,6 +46,23 @@ export default {
     roundDecimals: {
       type: Number,
       default: 0
+    },
+    leftSide: {
+      type: Boolean,
+      default: true
+    }
+  },
+
+  computed: {
+    topScrollerTransition() {
+      return this.leftSide
+        ? "translateX(100%)"
+        : "translateX(-80%)";
+    },
+    bottomScrollerTransition() {
+      return this.leftSide
+        ? "translate(100%, -70%)"
+        : "translate(-80%, -70%)";
     }
   },
 
